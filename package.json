@@ -57,6 +57,10 @@
       {
         "command": "chatgpt.resetConversation",
         "title": "Reset ChatGPT conversation"
+      },
+      {
+        "command": "chatgpt.translate",
+        "title": "ChatGPT: Translate selection"
       }
     ],
     "menus": {
@@ -85,6 +89,11 @@
           "command": "chatgpt.optimize",
           "when": "editorHasSelection",
           "group": "chatgpt-menu-group@5"
+        },
+        {
+          "command": "chatgpt.translate",
+          "when": "editorHasSelection",
+          "group": "chatgpt-menu-group@6"
         }
       ],
       "commandPalette": [
@@ -216,6 +225,50 @@
           "default": 2048,
           "description": "⚠️ If you receive an HTTP 400 Bad Request, lower your maxTokens setting to allow completion to fulfill your request ⚠️\nThe maximum number of tokens to generate in the completion.\nChoose this number carefully considering the your preferred model's allowed max number of tokens.",
           "order": 13
+        },
+        "chatgpt.promptPrefix.translate": {
+          "type": "string",
+          "default": "Translate the following content into {0}, including code comments, excluding code logic, and providing only the code: ",
+          "description": "The prompt prefix used for translate code",
+          "order": 14
+        },
+        "chatgpt.promptPrefix.translateLanguage": {
+          "type": "string",
+          "default": "中文 (Chinese)",
+          "enum": [
+            "العربية (Arabic)",
+            "বাংলা (Bengali)",
+            "Português (Portuguese)",
+            "中文 (Chinese)",
+            "Čeština (Czech)",
+            "Dansk (Danish)",
+            "Nederlands (Dutch)",
+            "English (English)",
+            "Suomi (Finnish)",
+            "Français (French)",
+            "Deutsch (German)",
+            "Ελληνικά (Greek)",
+            "עברית (Hebrew)",
+            "Magyar (Hungarian)",
+            "हिन्दी (Hindi)",
+            "Bahasa Indonesia (Indonesian)",
+            "Italiano (Italian)",
+            "日本語 (Japanese)",
+            "한국어 (Korean)",
+            "Bahasa Melayu (Malay)",
+            "Norsk (Norwegian)",
+            "فارسی (Persian)",
+            "Polski (Polish)",
+            "Русский (Russian)",
+            "Español (Spanish)",
+            "Svenska (Swedish)",
+            "ไทย (Thai)",
+            "Türkçe (Turkish)",
+            "Українська (Ukrainian)",
+            "Tiếng Việt (Vietnamese)"
+          ],
+          "description": "Translate Language",
+          "order": 15
         }
       }
     }

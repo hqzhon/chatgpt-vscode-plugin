@@ -40,6 +40,15 @@ export function activate(context: vscode.ExtensionContext) {
 		provider.search(prompt);
 	};
 
+	// Register the commands that can be called from the extension's package.json
+	const commandTranslateHandle = (command:string) => {
+		const config = vscode.workspace.getConfiguration('chatgpt');
+		const prompt = config.get(command) as string;
+		const language = config.get('promptPrefix.translateLanguage') as string;
+		const fullPrompt = provider.formatString(prompt, language);
+		provider.search(fullPrompt);
+	};
+
 	const commandAsk = vscode.commands.registerCommand('chatgpt.ask', () => {
 		vscode.window.showInputBox({ prompt: 'What do you want to do?' }).then((value) => {
 			provider.search(value);
@@ -76,13 +85,16 @@ export function activate(context: vscode.ExtensionContext) {
 	const commandProblems = vscode.commands.registerCommand('chatgpt.findProblems', () => {
 		commandHandler('promptPrefix.findProblems');
 	});
+	const commandTranslate = vscode.commands.registerCommand('chatgpt.translate', () => {
+		commandTranslateHandle('promptPrefix.translate');
+	});
 
 	let commandResetConversation = vscode.commands.registerCommand('chatgpt.resetConversation', () => {
 		provider.setConversationId();
 	});
 	
 
-	context.subscriptions.push(commandAsk, commandConversationId, commandExplain, commandRefactor, commandOptimize, commandProblems, commandResetConversation);
+	context.subscriptions.push(commandAsk, commandConversationId, commandExplain, commandRefactor, commandOptimize, commandProblems, commandResetConversation, commandTranslate);
 
 
 
@@ -129,11 +141,8 @@ export function activate(context: vscode.ExtensionContext) {
 			provider.setMaxTokens(maxTokens);
 		}
 });
+
 }
-
-
-
-
 
 class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 	public static readonly viewType = 'chatgpt.chatView';
@@ -189,6 +198,13 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 		this._maxTokens = maxTokens;
 		this._newAPI();
 	}
+
+	public formatString(template: string, ...args: any[]): string {
+		return template.replace(/{(\d+)}/g, (match, index) => {
+		  const argIndex = parseInt(index);
+		  return args[argIndex] !== undefined ? args[argIndex].toString() : match;
+		});
+	  }
 
 	public setConversationId(conversationId?: string, parentMessageId?: string) {
 		// if (!conversationId || !parentMessageId) {
@@ -318,7 +334,6 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 		} else {
 			// If successfully signed in
 			console.log("sendMessage");
-		    console.log(this._prompt);	
 			// Make sure the prompt is shown
 			this._view?.webview.postMessage({ type: 'setPrompt', value: this._prompt });
 
@@ -330,11 +345,9 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 
 			try {
 				// Send the search prompt to the ChatGPTAPI instance and store the response
-				console.log("real sendMessage");
 				response = await agent.sendMessage(searchPrompt, {
 					onProgress: (partialResponse) => {
 						if (this._view && this._view.visible) {
-							console.log(partialResponse.text);
 							this._view.webview.postMessage({ type: 'addResponse', value: partialResponse.text });
 						}
 					},
