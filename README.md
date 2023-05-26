@@ -36,18 +36,6 @@ To use this extension, install it from the VSCode marketplace or download and in
 
 After completing these steps, the extension should be ready to use. 
 
-### Obtaining the session token
-
-To use this extension, you will need to authenticate with a valid session token from ChatGPT. To get a session token:
-
-1. Go to https://chat.openai.com/chat and log in or sign up.
-2. Open the developer tools in your browser.
-3. Go to the `Application` tab and open the `Cookies` section.
-4. Copy the value for `__Secure-next-auth.session-token` and save it.
-
-Once you have obtained a session token, you can configure the extension to use it as described in the previous section.
-
-
 ## Using the Extension
 
 To use the extension, open a text editor in Visual Studio Code and open the ChatGPT panel by clicking on the ChatGPT icon in the sidebar. This will open a panel with an input field where you can enter your prompt or question. By clicking enter, it will be sent to ChatGPT. Its response will be displayed below the input field in the sidebar (note that it may take some time for it to be calculated).
@@ -69,7 +57,7 @@ You can select some code in the editor, right click on it and choose one of the 
 - `ChatGPT: Refactor selection`: will try to refactor the selected code
 - `ChatGPT: Find problems`: looks for problems/errors in the selected code, fixes and explains them
 - `ChatGPT: Optimize selection`: tries to optimize the selected code
-- `ChatGPT: Translate selection`: tries to optimize the selected code
+- `ChatGPT: Translate selection`: tries to translate the selected content,  including code comments, excluding code logic and code print log info 
 
 `Ask ChatGPT` is also available when nothing is selected. For the other four commands, you can customize the exact prompt that will be sent to the AI by editing the extension settings in VSCode Preferences.
 
