@@ -1,5 +1,7 @@
 # ChatGPT Extension for VSCode
-This Visual Studio Code extension is clone from [chatgpt-vscode](https://github.com/mpociot/chatgpt-vscode), and it has been optimized to switch from using an accessToken to using an API Key for requesting chatgpt.
+This Visual Studio Code extension is clone from [chatgpt-vscode](https://github.com/mpociot/chatgpt-vscode), and add Add the following features：
+-  switch from using an accessToken to using an API Key for requesting chatgpt.
+- Add translation code feature.
 
 This Visual Studio Code extension allows you to use the [unofficial ChatGPT API](https://github.com/transitive-bullshit/chatgpt-api) to generate natural language responses from OpenAI's [ChatGPT](https://chat.openai.com/chat) to your questions, right within the editor.
 
@@ -67,6 +69,7 @@ You can select some code in the editor, right click on it and choose one of the 
 - `ChatGPT: Refactor selection`: will try to refactor the selected code
 - `ChatGPT: Find problems`: looks for problems/errors in the selected code, fixes and explains them
 - `ChatGPT: Optimize selection`: tries to optimize the selected code
+- `ChatGPT: Translate selection`: tries to optimize the selected code
 
 `Ask ChatGPT` is also available when nothing is selected. For the other four commands, you can customize the exact prompt that will be sent to the AI by editing the extension settings in VSCode Preferences.
 
