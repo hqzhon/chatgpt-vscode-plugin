@@ -148,7 +148,7 @@
       "properties": {
         "chatgpt.apiKey": {
           "type": "string",
-          "description": "chatgpt api key",
+          "markdownDescription": "chatgpt api key,[documentation](https://platform.openai.com/account/api-keys)",
           "order": 1
         },
         "chatgpt.model": {
@@ -158,18 +158,19 @@
             "gpt-3.5-turbo",
             "gpt-4"
           ],
+          "markdownDescription": "OpenAI models to use for your prompts.[documentation](https://platform.openai.com/docs/models/models)",
           "order": 2
         },
         "chatgpt.temperature": {
           "type": "number",
           "default": 0.9,
-          "description": "What sampling temperature to use. Higher values means the model will take more risks. Try 0.9 for more creative applications, and 0 (argmax sampling) for ones with a well-defined answer.\n0: Get more precise answers\n0.5: Get more balanced answers\n0.9: Get more creative answers",
+          "markdownDescription": "What sampling temperature to use. Higher values means the model will take more risks.    \n Try 0.9 for more creative applications, and 0 (argmax sampling) for ones with a well-defined answer.[documentation](https://beta.openai.com/docs/api-reference/completions/create#completions/create-temperature)  \n - 0: Get more precise answers   \n - 0.5: Get more balanced answers   \n - 0.9: Get more creative answers",
           "order": 3
         },
         "chatgpt.top_p": {
           "type": "number",
           "default": 0.8,
-          "description": "An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered.",
+          "markdownDescription": "An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass.  So 0.1 means only the tokens comprising the top 10% probability mass are considered.[documentation](https://platform.openai.com/docs/api-reference/completions/create#completions/create-top_p)",
           "order": 4
         },
         "chatgpt.pasteOnClick": {
@@ -223,7 +224,7 @@
         "chatgpt.maxTokens": {
           "type": "number",
           "default": 2048,
-          "description": "⚠️ If you receive an HTTP 400 Bad Request, lower your maxTokens setting to allow completion to fulfill your request ⚠️\nThe maximum number of tokens to generate in the completion.\nChoose this number carefully considering the your preferred model's allowed max number of tokens.",
+          "markdownDescription": "⚠️ If you receive an HTTP 400 Bad Request, lower your maxTokens setting to allow completion to fulfill your request ⚠️   \n The maximum number of tokens to generate in the completion.   Choose this number carefully considering the your preferred model's allowed max number of tokens.[documentation](https://platform.openai.com/docs/api-reference/completions/create#completions/create-max_tokens)",
           "order": 13
         },
         "chatgpt.promptPrefix.translate": {
