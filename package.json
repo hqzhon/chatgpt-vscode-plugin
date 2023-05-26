@@ -1,13 +1,13 @@
 {
-  "name": "chatgpt",
-  "displayName": "ChatGPT: write and improve code using AI",
-  "description": "Extension that allows you to use OpeanAI's ChatGPT inside the IDE (unofficial)",
+  "name": "quick-chatgpt",
+  "displayName": "Quick ChatGPT: Using ChatGPT to improve code quality",
+  "description": "Extension that allows you to use OpeanAI's ChatGPT inside the vscode",
   "version": "0.4.0",
-  "publisher": "timkmecl",
+  "publisher": "hqzhon",
   "icon": "resources/extensionIcon.png",
   "license": "MIT",
   "repository": {
-    "url": "https://github.com/timkmecl/chatgpt-vscode"
+    "url": "https://github.com/hqzhon/chatgpt-vscode-plugin"
   },
   "engines": {
     "vscode": "^1.73.0"
