@@ -1,15 +1,23 @@
 import * as vscode from 'vscode';
-import { ChatGPTAPI, ChatGPTConversation } from 'chatgpt';
+import { ChatGPTAPI, ChatMessage } from 'chatgpt';
 
 
 export function activate(context: vscode.ExtensionContext) {
 	// Get the API session token from the extension's configuration
 	const config = vscode.workspace.getConfiguration('chatgpt');
-	const sessionToken = config.get('sessionToken') as string|undefined;
+	const apiKey = config.get('apiKey') as string|undefined;
+	const model = config.get('model') as string|undefined;
+	const temperature = config.get('temperature') as number|undefined;
+	const topP = config.get('top_p') as number | undefined;
+	const maxTokens = config.get('maxTokens') as number| undefined;
 
 	// Create a new ChatGPTViewProvider instance and register it with the extension's context
 	const provider = new ChatGPTViewProvider(context.extensionUri);
-	provider.setSessionToken(sessionToken);
+	provider.setApiKey(apiKey);
+	provider.setModel(model);
+	provider.setTemperature(temperature);
+	provider.setTopp(topP);
+	provider.setMaxTokens(maxTokens);
 
 	// Put configuration settings into the provider
 	provider.selectedInsideCodeblock = config.get('selectedInsideCodeblock') || false;
@@ -80,12 +88,12 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Change the extension's session token when configuration is changed
 	vscode.workspace.onDidChangeConfiguration((event: vscode.ConfigurationChangeEvent) => {
-		if (event.affectsConfiguration('chatgpt.sessionToken')) {
+		if (event.affectsConfiguration('chatgpt.apiKey')) {
 			// Get the extension's configuration
 			const config = vscode.workspace.getConfiguration('chatgpt');
-			const sessionToken = config.get('sessionToken') as string|undefined;
+			const apiKey = config.get('apiKey') as string|undefined;
 			// add the new token to the provider
-			provider.setSessionToken(sessionToken);
+			provider.setApiKey(apiKey);
 
 		} else if (event.affectsConfiguration('chatgpt.selectedInsideCodeblock')) {
 			const config = vscode.workspace.getConfiguration('chatgpt');
@@ -102,6 +110,23 @@ export function activate(context: vscode.ExtensionContext) {
 		}else if (event.affectsConfiguration('chatgpt.timeoutLength')) {
 			const config = vscode.workspace.getConfiguration('chatgpt');
 			provider.timeoutLength = config.get('timeoutLength') || 60;
+		} else if (event.affectsConfiguration('chatgpt.model')) {
+			const config = vscode.workspace.getConfiguration('chatgpt');
+			const model = config.get('model') as string|undefined;
+			// add the new token to the provider
+			provider.setModel(model);
+		} else if (event.affectsConfiguration('chatgpt.temperature')) {
+			const config = vscode.workspace.getConfiguration('chatgpt');
+			const temperature = config.get('temperature') as number | undefined;
+			provider.setTemperature(temperature);
+		} else if (event.affectsConfiguration('chatgpt.top_p')) {
+			const config = vscode.workspace.getConfiguration('chatgpt');
+			const topP = config.get('top_p') as number | undefined;
+			provider.setTopp(topP);
+		} else if (event.affectsConfiguration('chatgpt.maxTokens')) {
+			const config = vscode.workspace.getConfiguration('chatgpt');
+			const maxTokens = config.get('maxTokens') as number | undefined;
+			provider.setMaxTokens(maxTokens);
 		}
 });
 }
@@ -117,7 +142,7 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 
 	// This variable holds a reference to the ChatGPTAPI instance
 	private _chatGPTAPI?: ChatGPTAPI;
-	private _conversation?: ChatGPTConversation;
+	// private _conversation?: ChatGPTConversation;
 
 	private _response?: string;
 	private _prompt?: string;
@@ -128,7 +153,11 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 	public pasteOnClick = true;
 	public keepConversation = true;
 	public timeoutLength = 60;
-	private _sessionToken?: string;
+	private _apiKey?: string;
+	private _model?: string;
+	private _temperature?: number;
+	private _topP?: number;
+	private _maxTokens?: number;
 
 	// In the constructor, we store the URI of the extension
 	constructor(private readonly _extensionUri: vscode.Uri) {
@@ -136,35 +165,65 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 	}
 	
 	// Set the session token and create a new API instance based on this token
-	public setSessionToken(sessionToken?: string) {
-		this._sessionToken = sessionToken;
+	public setApiKey(apiKey?: string) {
+		this._apiKey = apiKey;
+		this._newAPI();
+	}
+
+	public setModel(model?: string) {
+		this._model = model;
+		this._newAPI();
+	}
+
+	public setTemperature(temperature?: number) {
+		this._temperature = temperature;
+		this._newAPI();
+	}
+
+	public setTopp(topP?: number) {
+		this._topP = topP;
+		this._newAPI();
+	}
+
+	public setMaxTokens(maxTokens?: number) {
+		this._maxTokens = maxTokens;
 		this._newAPI();
 	}
 
 	public setConversationId(conversationId?: string, parentMessageId?: string) {
-		if (!conversationId || !parentMessageId) {
-			this._conversation = this._chatGPTAPI?.getConversation();
-		} else if (conversationId && parentMessageId) {
-			this._conversation = this._chatGPTAPI?.getConversation({conversationId: conversationId, parentMessageId: parentMessageId});
-		}
+		// if (!conversationId || !parentMessageId) {
+		// 	this._conversation = this._chatGPTAPI?.getConversation();
+		// } else if (conversationId && parentMessageId) {
+		// 	this._conversation = this._chatGPTAPI?.getConversation({conversationId: conversationId, parentMessageId: parentMessageId});
+		// }
 	}
 
 	public getConversationId() {
-		return this._conversation?.conversationId;
+		return "";
+		// return this._conversation?.conversationId;
 	}
 	public getParentMessageId() {
-		return this._conversation?.parentMessageId;
+		return "";
+		// return this._conversation?.parentMessageId;
 	}
 
-	// This private method initializes a new ChatGPTAPI instance, using the session token if it is set
+	// This private method initializes a new ChatGPTAPI instance, using api key if it is set
 	private _newAPI() {
-		if (!this._sessionToken) {
-			console.warn("Session token not set");
+		if (!this._apiKey) {
+			console.warn("Api key not set");
+		} else if (!this._model || !this._temperature || !this._topP) {
+           console.warn('model/temperature/top_p is not set');
 		}else{
 			this._chatGPTAPI = new ChatGPTAPI({
-				sessionToken: this._sessionToken
+				apiKey: this._apiKey,
+				completionParams: {
+					model: this._model,
+					temperature: this._temperature,
+					top_p: this._topP,
+					max_tokens: this._maxTokens,
+				  },
 			});
-			this._conversation = this._chatGPTAPI.getConversation();
+			// this._conversation = this._chatGPTAPI.getConversation();
 		}
 	}
 
@@ -232,7 +291,7 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 			this._view?.show?.(true);
 		}
 		
-		let response = '';
+		var response ;
 
 		// Get the selected text of the active editor
 		const selection = vscode.window.activeTextEditor?.selection;
@@ -254,12 +313,12 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 		this._fullPrompt = searchPrompt;
 
 
-		if (!this._chatGPTAPI || !this._conversation) {
+		if (!this._chatGPTAPI) {
 			response = '[ERROR] Please enter an API key in the extension settings';
 		} else {
 			// If successfully signed in
 			console.log("sendMessage");
-			
+		    console.log(this._prompt);	
 			// Make sure the prompt is shown
 			this._view?.webview.postMessage({ type: 'setPrompt', value: this._prompt });
 
@@ -267,19 +326,16 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 				this._view.webview.postMessage({ type: 'addResponse', value: '...' });
 			}
 
-			let agent;
-			if (this.keepConversation) {
-				agent = this._conversation;
-			} else {
-				agent = this._chatGPTAPI;
-			}
+			let agent = this._chatGPTAPI;
 
 			try {
 				// Send the search prompt to the ChatGPTAPI instance and store the response
+				console.log("real sendMessage");
 				response = await agent.sendMessage(searchPrompt, {
 					onProgress: (partialResponse) => {
 						if (this._view && this._view.visible) {
-							this._view.webview.postMessage({ type: 'addResponse', value: partialResponse });
+							console.log(partialResponse.text);
+							this._view.webview.postMessage({ type: 'addResponse', value: partialResponse.text });
 						}
 					},
 					timeoutMs: this.timeoutLength * 1000
@@ -291,7 +347,7 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 		}
 
 		// Saves the response
-		this._response = response;
+		this._response = response.toString();
 
 		// Show the view and send a message to the webview with the response
 		if (this._view) {

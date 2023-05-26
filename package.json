@@ -26,12 +26,6 @@
     "refactor"
   ],
   "activationEvents": [
-    "onView:chatgpt.chatView",
-    "onCommand:chatgpt.ask",
-    "onCommand:chatgpt.explain",
-    "onCommand:chatgpt.refactor",
-    "onCommand:chatgpt.optimize",
-    "onCommand:chatgpt.problems"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -132,68 +126,96 @@
     },
     "views": {
       "chatgpt": [
-				{
-					"type": "webview",
-					"id": "chatgpt.chatView",
-					"name": "ChatGPT"
-				}
+        {
+          "type": "webview",
+          "id": "chatgpt.chatView",
+          "name": "ChatGPT"
+        }
       ]
     },
     "configuration": {
       "title": "chatGPT",
       "type": "object",
       "properties": {
-        "chatgpt.sessionToken": {
+        "chatgpt.apiKey": {
           "type": "string",
-          "description": "A session token you get when logged into chat.openai.com",
+          "description": "chatgpt api key",
           "order": 1
+        },
+        "chatgpt.model": {
+          "type": "string",
+          "default": "gpt-3.5-turbo",
+          "enum": [
+            "gpt-3.5-turbo",
+            "gpt-4"
+          ],
+          "order": 2
+        },
+        "chatgpt.temperature": {
+          "type": "number",
+          "default": 0.9,
+          "description": "What sampling temperature to use. Higher values means the model will take more risks. Try 0.9 for more creative applications, and 0 (argmax sampling) for ones with a well-defined answer.\n0: Get more precise answers\n0.5: Get more balanced answers\n0.9: Get more creative answers",
+          "order": 3
+        },
+        "chatgpt.top_p": {
+          "type": "number",
+          "default": 0.8,
+          "description": "An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered.",
+          "order": 4
         },
         "chatgpt.pasteOnClick": {
           "type": "boolean",
           "default": true,
           "description": "Paste the code from a codeblock inside the response into the editor when you click on it",
-          "order": 2
+          "order": 5
         },
         "chatgpt.promptPrefix.explain": {
           "type": "string",
           "default": "Explain what this code does: ",
           "description": "The prompt prefix used for explaining the selected code",
-          "order": 3
+          "order": 6
         },
         "chatgpt.promptPrefix.refactor": {
           "type": "string",
           "default": "Refactor this code and explain what's changed: ",
           "description": "The prompt prefix used for refactoring the selected code",
-          "order": 4
+          "order": 7
         },
         "chatgpt.promptPrefix.findProblems": {
           "type": "string",
           "default": "Find problems with the following code, fix them and explain what was wrong (Do not change anything else): ",
           "description": "The prompt prefix used for finding problems in the selected code",
-          "order": 5
+          "order": 8
         },
         "chatgpt.promptPrefix.optimize": {
           "type": "string",
           "default": "Optimize the following code: ",
           "description": "The prompt prefix used for optimizing the selected code",
-          "order": 6
+          "order": 9
         },
         "chatgpt.keepConversation": {
           "type": "boolean",
           "default": true,
           "description": "Keep the conversation going by using the same conversation ID for all requests (allows follow-up questions)",
-          "order": 7
-        },"chatgpt.timeoutLength": {
+          "order": 10
+        },
+        "chatgpt.timeoutLength": {
           "type": "number",
-          "default": "60",
+          "default": 60,
           "description": "How long should the request wait for a response before timing out (in seconds)",
-          "order": 8
+          "order": 11
         },
         "chatgpt.selectedInsideCodeblock": {
           "type": "boolean",
           "default": true,
           "description": "Append selected code as a codeblock (```...code...```) instead of plain text",
-          "order": 9
+          "order": 12
+        },
+        "chatgpt.maxTokens": {
+          "type": "number",
+          "default": 2048,
+          "description": "⚠️ If you receive an HTTP 400 Bad Request, lower your maxTokens setting to allow completion to fulfill your request ⚠️\nThe maximum number of tokens to generate in the completion.\nChoose this number carefully considering the your preferred model's allowed max number of tokens.",
+          "order": 13
         }
       }
     }
@@ -226,6 +248,6 @@
     "webpack-cli": "^5.0.0"
   },
   "dependencies": {
-    "chatgpt": "^2.0.5"
+    "chatgpt": "^5.2.4"
   }
 }
