@@ -1,5 +1,5 @@
 # ChatGPT Extension for VSCode
-This Visual Studio Code extension is clone from [chatgpt-vscode](https://github.com/mpociot/chatgpt-vscode), and add Add the following features：
+This Visual Studio Code extension is based on [chatgpt-vscode](https://github.com/mpociot/chatgpt-vscode), and add Add the following features：
 -  switch from using an accessToken to using an API Key for requesting chatgpt.
 - Add translation code feature.
 
@@ -12,7 +12,7 @@ This Visual Studio Code extension allows you to use the [unofficial ChatGPT API]
 [![What The Diff](https://whatthediff.ai/images/card.png)](https://whatthediff.ai/?ref=gh-chatgpt)
 
 
-### [Marketplace](https://marketplace.visualstudio.com/items?itemName=timkmecl.chatgpt)
+### [Marketplace](https://marketplace.visualstudio.com/items?itemName=hqzhon.quick-chatgpt)
 
 <br>
 
@@ -32,7 +32,7 @@ To use this extension, install it from the VSCode marketplace or download and in
 
 1. After the installation is complete, you will need to add your ChatGPT session token to the extension settings in VSCode. To do this, open the `Settings` panel by going to the `Code` menu and selecting `Preferences`, then `Settings`.
 2. In the search bar, type `ChatGPT` to filter the settings list.
-3. In the ChatGPT section, enter your session token in the `SESSION_TOKEN` field.
+3. In the ChatGPT section, enter your apiKey in the `apiKey` field.
 
 After completing these steps, the extension should be ready to use. 
 
