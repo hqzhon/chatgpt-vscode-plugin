@@ -228,7 +228,7 @@
         },
         "chatgpt.promptPrefix.translate": {
           "type": "string",
-          "default": "Translate the following content into {0}, including code comments, excluding code logic, and providing only the code: ",
+          "default": "Translate the following content into {0}, including code comments, excluding code logic and code print log info ",
           "description": "The prompt prefix used for translate code",
           "order": 14
         },
