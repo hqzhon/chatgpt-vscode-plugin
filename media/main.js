@@ -104,4 +104,18 @@
       });
     }
   });
+
+  document.getElementById('ask-button').addEventListener('click', (e) => {
+    vscode.postMessage({
+      type: 'prompt',
+      value: this.value
+    });
+  });
+
+  document.getElementById('settings-button').addEventListener('click', (e) => {
+    vscode.postMessage({
+      type: 'openSettings',
+    });
+  });
+
 })();
