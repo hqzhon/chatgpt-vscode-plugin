@@ -95,14 +95,16 @@
   }
 
   // Listen for keyup events on the prompt input element
-  document.getElementById('prompt-input').addEventListener('keyup', function (e) {
-    // If the key that was pressed was the Enter key
-    if (e.keyCode === 13) {
+  document.getElementById('prompt-input').addEventListener('keydown', function(e) {
+   if (e.keyCode === 13) {
+    if (!e.ctrlKey && !e.shiftKey) {
+      e.preventDefault();
       vscode.postMessage({
         type: 'prompt',
         value: this.value
       });
     }
+   }
   });
 
   document.getElementById('ask-button').addEventListener('click', (e) => {
