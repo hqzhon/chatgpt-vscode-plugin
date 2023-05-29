@@ -85,6 +85,9 @@ export function activate(context: vscode.ExtensionContext) {
 	const commandProblems = vscode.commands.registerCommand('chatgpt.findProblems', () => {
 		commandHandler('promptPrefix.findProblems');
 	});
+	const commandAddComments= vscode.commands.registerCommand('chatgpt.addComments', () => {
+		commandHandler('promptPrefix.addComments');
+	});
 	const commandTranslate = vscode.commands.registerCommand('chatgpt.translate', () => {
 		commandTranslateHandle('promptPrefix.translate');
 	});
@@ -94,7 +97,7 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 	
 
-	context.subscriptions.push(commandAsk, commandConversationId, commandExplain, commandRefactor, commandOptimize, commandProblems, commandResetConversation, commandTranslate);
+	context.subscriptions.push(commandAsk, commandConversationId, commandExplain, commandRefactor, commandOptimize, commandProblems, commandResetConversation, commandTranslate, commandAddComments);
 
 
 

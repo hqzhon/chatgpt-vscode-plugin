@@ -2,7 +2,7 @@
   "name": "quick-chatgpt",
   "displayName": "Quick ChatGPT: Using ChatGPT to improve code quality",
   "description": "Extension that allows you to use OpeanAI's ChatGPT inside the vscode",
-  "version": "0.4.5",
+  "version": "0.5.0",
   "publisher": "hqzhon",
   "icon": "resources/extensionIcon.png",
   "license": "MIT",
@@ -60,6 +60,10 @@
       {
         "command": "chatgpt.translate",
         "title": "ChatGPT: Translate selection"
+      },
+      {
+        "command": "chatgpt.addComments",
+        "title": "ChatGPT: Comment selection"
       }
     ],
     "menus": {
@@ -93,6 +97,11 @@
           "command": "chatgpt.translate",
           "when": "editorHasSelection",
           "group": "chatgpt-menu-group@6"
+        },
+        {
+          "command": "chatgpt.addComments",
+          "when": "editorHasSelection",
+          "group": "chatgpt-menu-group@7"
         }
       ],
       "commandPalette": [
@@ -269,6 +278,12 @@
           ],
           "description": "Translate Language",
           "order": 15
+        },
+        "chatgpt.promptPrefix.addComments": {
+          "type": "string",
+          "default": "Add comments for the following code,and only return comments and code with code format",
+          "description": "The prompt prefix used for comment code",
+          "order": 16
         }
       }
     }
