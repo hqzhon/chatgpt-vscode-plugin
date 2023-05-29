@@ -2,7 +2,7 @@
   "name": "quick-chatgpt",
   "displayName": "Quick ChatGPT: Using ChatGPT to improve code quality",
   "description": "Extension that allows you to use OpeanAI's ChatGPT inside the vscode",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "publisher": "hqzhon",
   "icon": "resources/extensionIcon.png",
   "license": "MIT",
@@ -171,7 +171,7 @@
         },
         "chatgpt.temperature": {
           "type": "number",
-          "default": 0.9,
+          "default": 0.3,
           "markdownDescription": "What sampling temperature to use. Higher values means the model will take more risks.    \n Try 0.9 for more creative applications, and 0 (argmax sampling) for ones with a well-defined answer.[documentation](https://beta.openai.com/docs/api-reference/completions/create#completions/create-temperature)  \n - 0: Get more precise answers   \n - 0.5: Get more balanced answers   \n - 0.9: Get more creative answers",
           "order": 3
         },
@@ -237,7 +237,7 @@
         },
         "chatgpt.promptPrefix.translate": {
           "type": "string",
-          "default": "Translate the following content into {0}, including code comments, excluding code logic and code print log info ",
+          "default": "Translate the following content into {0}, including code comments, excluding code logic and code print log info,and return markdown code format ",
           "description": "The prompt prefix used for translate code",
           "order": 14
         },
@@ -281,7 +281,7 @@
         },
         "chatgpt.promptPrefix.addComments": {
           "type": "string",
-          "default": "Add comments for the following code,and only return comments and code with code format",
+          "default": "Add comments for the following code,and only return comments and code with code format, return markdown code format",
           "description": "The prompt prefix used for comment code",
           "order": 16
         }
