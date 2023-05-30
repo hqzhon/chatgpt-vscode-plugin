@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { ChatGPTAPI, ChatMessage } from 'chatgpt';
+import { ChatGPTAPI, ChatMessage } from 'chatgpt-vscode';
 
 
 export function activate(context: vscode.ExtensionContext) {
@@ -315,7 +315,9 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 			this._view?.show?.(true);
 		}
 		
-		var response ;
+		var response: string| ChatMessage ;
+		var responseId; 
+		var responseText;
 
 		// Get the selected text of the active editor
 		const selection = vscode.window.activeTextEditor?.selection;
@@ -345,8 +347,10 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 			// Make sure the prompt is shown
 			this._view?.webview.postMessage({ type: 'setPrompt', value: this._prompt });
 
+			console.log(this._view);
 			if (this._view) {
-				this._view.webview.postMessage({ type: 'addResponse', value: '...' });
+				console.log(searchPrompt);
+				this._view.webview.postMessage({ type: 'addQuestion', value: this._prompt, code: selectedText, autoScroll: true });
 			}
 
 			let agent = this._chatGPTAPI;
@@ -355,8 +359,18 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 				// Send the search prompt to the ChatGPTAPI instance and store the response
 				response = await agent.sendMessage(searchPrompt, {
 					onProgress: (partialResponse) => {
+						responseText = partialResponse.text;
+						responseId = partialResponse.id;
 						if (this._view && this._view.visible) {
-							this._view.webview.postMessage({ type: 'addResponse', value: partialResponse.text });
+							console.log(partialResponse.text);
+							this._view.webview.postMessage({ 
+								type: 'setResponse',  
+								value: responseText, 
+								done: false,
+								id: responseId, 
+								autoScroll: true, 
+								responseInMarkdown: true 
+							});
 						}
 					},
 					timeoutMs: this.timeoutLength * 1000
@@ -373,7 +387,14 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 		// Show the view and send a message to the webview with the response
 		if (this._view) {
 			this._view.show?.(true);
-			this._view.webview.postMessage({ type: 'addResponse', value: response });
+			this._view.webview.postMessage({ 
+				type: 'setResponse',  
+				value: responseText, 
+				done: true,
+				id: responseId, 
+				autoScroll: true, 
+				responseInMarkdown: true 
+			});
 		}
 	}
 
@@ -384,6 +405,10 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 		const microlightUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'scripts', 'microlight.min.js'));
 		const showdownUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'scripts', 'showdown.min.js'));
 		const tailwindUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'scripts', 'tailwind.min.js'));
+		const vendorMarkedJs = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'scripts', 'marked.min.js'));
+		const vendorTurndownJs = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'scripts', 'turndown.js'));
+		const vendorHighlightCss = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'scripts', 'highlight.min.css'));
+		const vendorHighlightJs = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'scripts', 'highlight.min.js'));
 
 		return `<!DOCTYPE html>
 			<html lang="en">
@@ -393,7 +418,11 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 				<script src="${tailwindUri}"></script>
 				<script src="${showdownUri}"></script>
 				<script src="${microlightUri}"></script>
+				<script src="${vendorMarkedJs}"></script>
+				<script src="${vendorTurndownJs}"></script>
+				<script src="${vendorHighlightJs}"></script>
 				<link href="${stylesMainUri}" rel="stylesheet">
+				<link href="${vendorHighlightCss}" rel="stylesheet">
 				<style>
 				.code {
 					white-space : pre;
