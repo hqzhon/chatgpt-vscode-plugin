@@ -2,7 +2,7 @@
   "name": "quick-chatgpt",
   "displayName": "Quick ChatGPT: Using ChatGPT to improve code quality",
   "description": "Extension that allows you to use OpeanAI's ChatGPT inside the vscode",
-  "version": "0.5.6",
+  "version": "0.5.8",
   "publisher": "hqzhon",
   "icon": "resources/extensionIcon.png",
   "license": "MIT",
@@ -303,7 +303,9 @@
     "@types/glob": "^8.0.0",
     "@types/mocha": "^10.0.1",
     "@types/node": "16.x",
+    "@types/uuid": "^9.0.0",
     "@types/vscode": "^1.73.0",
+    "@types/vscode-webview": "^1.57.0",
     "@typescript-eslint/eslint-plugin": "^5.45.0",
     "@typescript-eslint/parser": "^5.45.0",
     "@vscode/test-electron": "^2.2.0",
@@ -311,17 +313,18 @@
     "eventsource-parser": "^0.1.0",
     "glob": "^8.0.3",
     "mocha": "^10.1.0",
-    "quick-lru": "^6.1.1",
-    "remark": "^14.0.2",
-    "strip-markdown": "^5.0.0",
     "ts-loader": "^9.4.1",
     "typescript": "^4.9.3",
-    "uuid": "^9.0.0",
     "webpack": "^5.75.0",
     "webpack-cli": "^5.0.0"
   },
   "dependencies": {
-    "chatgpt-vscode": "^5.2.6",
-    "keyv": "^4.5.2"
+    "chatgpt-vscode": "^5.3.4",
+    "keyv": "^4.5.2",
+    "node-fetch": "^2.6.11",
+    "quick-lru": "^6.1.1",
+    "remark": "^14.0.2",
+    "strip-markdown": "^5.0.0",
+    "uuid": "^9.0.0"
   }
 }
