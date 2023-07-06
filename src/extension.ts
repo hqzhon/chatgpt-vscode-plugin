@@ -345,7 +345,7 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 			// If successfully signed in
 			console.log("sendMessage");
 			// Make sure the prompt is shown
-			this._view?.webview.postMessage({ type: 'setPrompt', value: this._prompt });
+			// this._view?.webview.postMessage({ type: 'setPrompt', value: this._prompt });
 
 			console.log(this._view);
 			if (this._view) {
@@ -362,7 +362,6 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 						responseText = partialResponse.text;
 						responseId = partialResponse.id;
 						if (this._view && this._view.visible) {
-							console.log(partialResponse.text);
 							this._view.webview.postMessage({ 
 								type: 'setResponse',  
 								value: responseText, 
