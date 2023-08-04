@@ -104,20 +104,12 @@
         .replaceAll("&#039;", "'");
     };
 
-<<<<<<< HEAD
     updatedValue =
       response1.value.split("```").length % 2 === 1
           ? response1.value
           : response1.value + "\n\n```\n\n";
         
     const markedResponse = marked.parse(updatedValue);
-=======
-    let updateCode = response1.code.split("```").length % 2 === 1
-                   ? response1.code
-                   : response1.code + "\n\n```\n\n";
-
-    const markedCode = marked.parse(updateCode);
->>>>>>> f396815d64096b0c9f931a188432f35aafbf9c7e
 
     list.innerHTML += `<div class="p-4 self-end mt-4 question-element-ext relative input-background">
                         <h2 class="mb-5 flex" data-license="isc-gnc">${userSvg}You</h2>
@@ -128,13 +120,7 @@
                                 <button title="Cancel" class="cancel-element-ext p-1 pr-2 flex items-center">${cancelSvg}&nbsp;Cancel</button>
                             </div>
                         </no-export>
-<<<<<<< HEAD
                         <div class="overflow-y-auto">${markedResponse}</div>
-=======
-                        <div class="overflow-y-auto">${escapeHtml(
-                          response1.value + "\n" + markedCode
-                        )}</div>
->>>>>>> f396815d64096b0c9f931a188432f35aafbf9c7e
                     </div>`;
 
     if (response1.autoScroll) {
