@@ -324,7 +324,8 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 		const selectedText = vscode.window.activeTextEditor?.document.getText(selection);
 		let searchPrompt = '';
 
-		if (selection && selectedText) {
+		if (prompt.startsWith('/') && selection && selectedText) {
+			prompt = prompt.substring(1);
 			// If there is a selection, add the prompt and the selected text to the search prompt
 			if (this.selectedInsideCodeblock) {
 				searchPrompt = `${prompt}\n\`\`\`\n${selectedText}\n\`\`\``;
@@ -350,7 +351,7 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 			console.log(this._view);
 			if (this._view) {
 				console.log(searchPrompt);
-				this._view.webview.postMessage({ type: 'addQuestion', value: this._prompt, code: selectedText, autoScroll: true });
+				this._view.webview.postMessage({ type: 'addQuestion', value: searchPrompt, code: selectedText, autoScroll: true });
 			}
 
 			let agent = this._chatGPTAPI;
