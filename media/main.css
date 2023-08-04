@@ -283,6 +283,10 @@ textarea::placeholder {
     background: var(--vscode-input-background);
 }
 
+.user-background {
+    background: var(--vscode-editor-background);
+}
+
 .send-element-ext,
 .cancel-element-ext {
     font-size: smaller;

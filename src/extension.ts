@@ -430,7 +430,6 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 			</head>
 			<body class="overflow-hidden">
 			    <div class="flex flex-col h-screen">
-				    <div id="response" class="pt-6 text-sm"></div>
 
 					<div class="flex-1 overflow-y-auto" id="qa-list" data-license="isc-gnc"></div>
 
@@ -449,7 +448,7 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>Stop responding</button>
 					</div>
 
-				    <div class="p-4 flex items-center pt-2" data-license="isc-gnc">
+				    <div class="p-2 flex items-center pt-2" data-license="isc-gnc">
 						<div class="flex-1 textarea-wrapper">
 							<textarea
 								type="text"
