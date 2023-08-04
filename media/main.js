@@ -104,6 +104,13 @@
         .replaceAll("&#039;", "'");
     };
 
+    updatedValue =
+      response1.value.split("```").length % 2 === 1
+          ? response1.value
+          : response1.value + "\n\n```\n\n";
+        
+    const markedResponse = marked.parse(updatedValue);
+
     list.innerHTML += `<div class="p-4 self-end mt-4 question-element-ext relative input-background">
                         <h2 class="mb-5 flex" data-license="isc-gnc">${userSvg}You</h2>
                         <no-export class="mb-2 flex items-center" data-license="isc-gnc">
@@ -113,9 +120,7 @@
                                 <button title="Cancel" class="cancel-element-ext p-1 pr-2 flex items-center">${cancelSvg}&nbsp;Cancel</button>
                             </div>
                         </no-export>
-                        <div class="overflow-y-auto">${escapeHtml(
-                          response1.value
-                        )}</div>
+                        <div class="overflow-y-auto">${markedResponse}</div>
                     </div>`;
 
     if (response1.autoScroll) {
@@ -256,17 +261,19 @@
     }
   }
 
+  const promptInput = document.getElementById('prompt-input');
+
   // Listen for keyup events on the prompt input element
-  document.getElementById('prompt-input').addEventListener('keydown', function(e) {
-   if (e.keyCode === 13) {
-    if (!e.ctrlKey && !e.shiftKey) {
+  promptInput.addEventListener('keydown', (e) => {
+    const { keyCode, ctrlKey, shiftKey } = e;
+  
+    if (keyCode === 13 && !ctrlKey && !shiftKey) {
       e.preventDefault();
       vscode.postMessage({
         type: 'prompt',
-        value: this.value
+        value: promptInput.value
       });
     }
-   }
   });
 
   document.getElementById('ask-button').addEventListener('click', (e) => {
