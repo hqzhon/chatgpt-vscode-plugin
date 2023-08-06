@@ -339,23 +339,29 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 
 		this._fullPrompt = searchPrompt;
 
+		console.log("sendMessage");
+		console.log(this._view);
+		if (this._view) {
+			console.log(searchPrompt);
+			this._view.webview.postMessage({ type: 'addQuestion', value: searchPrompt, code: selectedText, autoScroll: true });
+		}
+
 
 		if (!this._chatGPTAPI) {
 			response = '[ERROR] Please enter an API key in the extension settings';
-		} else {
-			// If successfully signed in
-			console.log("sendMessage");
-			// Make sure the prompt is shown
-			// this._view?.webview.postMessage({ type: 'setPrompt', value: this._prompt });
-
-			console.log(this._view);
 			if (this._view) {
-				console.log(searchPrompt);
-				this._view.webview.postMessage({ type: 'addQuestion', value: searchPrompt, code: selectedText, autoScroll: true });
+				this._view.show?.(true);
+			    this._view.webview.postMessage({ 
+				    type: 'setResponse',  
+				    value: response, 
+				    done: true,
+				    id: 0, 
+				    autoScroll: true, 
+				    responseInMarkdown: true 
+			    });
 			}
-
+		} else {
 			let agent = this._chatGPTAPI;
-
 			try {
 				// Send the search prompt to the ChatGPTAPI instance and store the response
 				response = await agent.sendMessage(searchPrompt, {
