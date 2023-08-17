@@ -59,6 +59,10 @@
         hideStopButton();
         break;
       }
+      case "clearChatHistory": {
+        document.getElementById("qa-list").innerHTML = '';
+        break;
+      }
     }
   });
 

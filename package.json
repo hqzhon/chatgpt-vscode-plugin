@@ -2,7 +2,7 @@
   "name": "quick-chatgpt",
   "displayName": "Quick ChatGPT: Using ChatGPT to improve code quality",
   "description": "Extension that allows you to use OpeanAI's ChatGPT inside the vscode",
-  "version": "0.6.3",
+  "version": "0.6.5",
   "publisher": "hqzhon",
   "icon": "resources/extensionIcon.png",
   "license": "MIT",
@@ -64,9 +64,19 @@
       {
         "command": "chatgpt.addComments",
         "title": "ChatGPT: Comment selection"
+      },
+      {
+        "command": "chatgpt.clearHistory",
+        "title": "Clear History"
       }
     ],
     "menus": {
+      "view/title": [
+        {
+          "command": "chatgpt.clearHistory",
+          "when": "view == chatgpt.chatView"
+        }
+      ],
       "editor/context": [
         {
           "command": "chatgpt.ask",

@@ -54,6 +54,9 @@ export function activate(context: vscode.ExtensionContext) {
 			provider.search(value);
 		});
 	});
+	const commandClear = vscode.commands.registerCommand('chatgpt.clearHistory', () => {
+		provider.clearChatHistory();
+	});
 	const commandConversationId = vscode.commands.registerCommand('chatgpt.conversationId', () => {
 		vscode.window.showInputBox({ 
 			prompt: 'Set Conversation ID or delete it to reset the conversation',
@@ -303,6 +306,11 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 	}
 
 
+	public async clearChatHistory() {
+		if (this._view) {
+			this._view.webview.postMessage({ type: 'clearChatHistory', value: "", code: "", autoScroll: true });
+		}
+	}
 
 	public async search(prompt?:string, isUseSelectedCode:boolean = true) {
 		this._prompt = prompt;
