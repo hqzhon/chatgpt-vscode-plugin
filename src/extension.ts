@@ -289,7 +289,7 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 					}	
 				case 'prompt':
 					{
-						this.search(data.value);
+						this.search(data.value, data.value.startsWith('/'));
 					}
 			}
 		});
@@ -297,7 +297,7 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 
 
 
-	public async search(prompt?:string) {
+	public async search(prompt?:string, isUseSelectedCode:boolean = true) {
 		this._prompt = prompt;
 		if (!prompt) {
 			prompt = '';
@@ -324,7 +324,7 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 		const selectedText = vscode.window.activeTextEditor?.document.getText(selection);
 		let searchPrompt = '';
 
-		if (prompt.startsWith('/') && selection && selectedText) {
+		if (isUseSelectedCode && selection && selectedText) {
 			prompt = prompt.substring(1);
 			// If there is a selection, add the prompt and the selected text to the search prompt
 			if (this.selectedInsideCodeblock) {
