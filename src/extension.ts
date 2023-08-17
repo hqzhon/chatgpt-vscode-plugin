@@ -160,6 +160,8 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 	private _prompt?: string;
 	private _fullPrompt?: string;
 
+	private _responseIdSet: Set<string> = new Set();
+
 
 	public selectedInsideCodeblock = false;
 	public pasteOnClick = true;
@@ -291,6 +293,11 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 					{
 						this.search(data.value, data.value.startsWith('/'));
 					}
+				case 'stop':
+					{
+						console.log("stop: " + data.value);
+						this._responseIdSet.add(data.value);
+					}
 			}
 		});
 	}
@@ -316,7 +323,7 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 		}
 		
 		var response: string| ChatMessage ;
-		var responseId; 
+		var responseId: string = ""; 
 		var responseText;
 
 		// Get the selected text of the active editor
@@ -364,13 +371,17 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 			}
 		} else {
 			let agent = this._chatGPTAPI;
+			if (this._view && this._view.visible) {
+				this._view.webview.postMessage({ type: 'showStopButton', value: "", code: "", autoScroll: true });
+			}
+			
 			try {
 				// Send the search prompt to the ChatGPTAPI instance and store the response
 				response = await agent.sendMessage(searchPrompt, {
 					onProgress: (partialResponse) => {
 						responseText = partialResponse.text;
 						responseId = partialResponse.id;
-						if (this._view && this._view.visible) {
+						if (this._view && this._view.visible && !this._responseIdSet.has(responseId)) {
 							this._view.webview.postMessage({ 
 								type: 'setResponse',  
 								value: responseText, 
@@ -395,14 +406,20 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 		// Show the view and send a message to the webview with the response
 		if (this._view) {
 			this._view.show?.(true);
-			this._view.webview.postMessage({ 
-				type: 'setResponse',  
-				value: responseText, 
-				done: true,
-				id: responseId, 
-				autoScroll: true, 
-				responseInMarkdown: true 
-			});
+			if (!this._responseIdSet.has(responseId)) {
+				this._view.webview.postMessage({ 
+					type: 'setResponse',  
+					value: responseText, 
+					done: true,
+					id: responseId, 
+					autoScroll: true, 
+					responseInMarkdown: true 
+				});
+			} else {
+				this._responseIdSet.delete(responseId);
+			}
+
+			this._view.webview.postMessage({ type: 'hideStopButton', value: "", code: "", autoScroll: true });
 		}
 	}
 
@@ -451,9 +468,6 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 							<div class="bounce2"></div>
 							<div class="bounce3"></div>
 						</div>
-
-						<button id="stop-button" class="btn btn-primary flex items-end p-1 pr-2 rounded-md ml-5">
-							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>Stop responding</button>
 					</div>
 
 				    <div class="p-2 flex items-center pt-2" data-license="isc-gnc">
@@ -472,6 +486,9 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 
 							<button id="ask-button" title="Submit prompt" class="ask-button rounded-lg p-0.5">
 								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" /></svg>
+							</button>
+							<button id="stop-button" class="stop-button rounded-lg p-0.5" style="display: none;" title="Stop Typing">
+							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
 							</button>
 						</div>
 				    </div>

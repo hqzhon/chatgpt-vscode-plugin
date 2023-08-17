@@ -51,6 +51,14 @@
         document.getElementById("prompt-input").value = message.value;
         break;
       }
+      case "showStopButton": {
+        showStopButton();
+        break;
+      }
+      case "hideStopButton": {
+        hideStopButton();
+        break;
+      }
     }
   });
 
@@ -114,6 +122,16 @@
         inline: "nearest",
       });
     }
+  }
+
+  function showStopButton() {
+    document.getElementById('ask-button').style.display = 'none';
+    document.getElementById('stop-button').style.display = 'inline';
+  }
+
+  function hideStopButton() {
+    document.getElementById('ask-button').style.display = 'inline';
+    document.getElementById('stop-button').style.display = 'none';
   }
 
   function addResponse() {
@@ -272,6 +290,21 @@
   document.getElementById('settings-button').addEventListener('click', (e) => {
     vscode.postMessage({
       type: 'openSettings',
+    });
+  });
+
+  document.getElementById('stop-button').addEventListener('click', (e) => {
+    vscode.postMessage({
+      type: 'stop',
+      value: response1.id
+    });
+    hideStopButton();
+    existingMessage = document.getElementById(response1.id);
+    existingMessage.classList.remove("result-streaming");
+    document.getElementById("qa-list").lastChild?.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+      inline: "nearest",
     });
   });
 

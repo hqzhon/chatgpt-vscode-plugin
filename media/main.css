@@ -170,6 +170,16 @@ textarea {
     background-color: var(--vscode-input-background);
 }
 
+@keyframes scaleAnimation {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+
+  .stop-button {
+    animation: scaleAnimation 2s infinite;
+  }
+
 input::placeholder,
 textarea::placeholder {
     color: var(--vscode-input-placeholderForeground);
