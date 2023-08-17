@@ -291,12 +291,6 @@
     promptInput.value = '';
   });
 
-  document.getElementById('settings-button').addEventListener('click', (e) => {
-    vscode.postMessage({
-      type: 'openSettings',
-    });
-  });
-
   document.getElementById('stop-button').addEventListener('click', (e) => {
     vscode.postMessage({
       type: 'stop',
