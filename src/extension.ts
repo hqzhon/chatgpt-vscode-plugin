@@ -325,7 +325,9 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 		let searchPrompt = '';
 
 		if (isUseSelectedCode && selection && selectedText) {
-			prompt = prompt.substring(1);
+			if (prompt.startsWith('/')) {
+				prompt = prompt.substring(1);
+			}
 			// If there is a selection, add the prompt and the selected text to the search prompt
 			if (this.selectedInsideCodeblock) {
 				searchPrompt = `${prompt}\n\`\`\`\n${selectedText}\n\`\`\``;
