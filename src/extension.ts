@@ -167,6 +167,7 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 	private _fullPrompt?: string;
 
 	private _responseIdSet: Set<string> = new Set();
+	private _lastResponseId?: string;
 
 
 	public selectedInsideCodeblock = false;
@@ -384,9 +385,11 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 			try {
 				// Send the search prompt to the ChatGPTAPI instance and store the response
 				response = await agent.sendMessage(searchPrompt, {
+					parentMessageId: this._lastResponseId,
 					onProgress: (partialResponse) => {
 						responseText = partialResponse.text;
 						responseId = partialResponse.id;
+						this._lastResponseId = responseId;
 						if (this._view && this._view.visible && !this._responseIdSet.has(responseId)) {
 							this._view.webview.postMessage({ 
 								type: 'setResponse',  
