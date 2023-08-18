@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { ChatGPTAPI, ChatMessage } from 'chatgpt-vscode';
+import {v4 as uuidv4 } from 'uuid';
 
 
 export function activate(context: vscode.ExtensionContext) {
@@ -362,7 +363,6 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 			this._view.webview.postMessage({ type: 'addQuestion', value: searchPrompt, code: selectedText, autoScroll: true });
 		}
 
-
 		if (!this._chatGPTAPI) {
 			response = '[ERROR] Please enter an API key in the extension settings';
 			if (this._view) {
@@ -371,7 +371,7 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 				    type: 'setResponse',  
 				    value: response, 
 				    done: true,
-				    id: 0, 
+				    id: uuidv4(), 
 				    autoScroll: true, 
 				    responseInMarkdown: true 
 			    });
@@ -471,12 +471,11 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 
 
 					<div id="in-progress" class="pl-4 pt-2 flex items-center hidden" data-license="isc-gnc">
-						<div class="typing">Thinking</div>
 						<div class="spinner">
 							<div class="bounce1"></div>
 							<div class="bounce2"></div>
 							<div class="bounce3"></div>
-						</div>
+						</div>	
 					</div>
 
 				    <div class="p-2 flex items-center pt-2" data-license="isc-gnc">

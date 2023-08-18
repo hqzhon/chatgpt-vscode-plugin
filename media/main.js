@@ -126,6 +126,15 @@
         inline: "nearest",
       });
     }
+    showInProgress();
+  }
+
+  function showInProgress() {
+    document.getElementById('in-progress').style.display = 'block';
+  }
+
+  function hiddenInProgress() {
+    document.getElementById('in-progress').style.display = 'none';
   }
 
   function showStopButton() {
@@ -167,6 +176,7 @@
     if (existingMessage) {
       existingMessage.innerHTML = markedResponse;
     } else {
+      hiddenInProgress();
       list.innerHTML += `<div data-license="isc-gnc" class="p-2 answer-element-ext">
                         <h2 class="mb-5 flex">${aiSvg}ChatGPT</h2>
                         <div class="result-streaming" id="${response1.id}">${markedResponse}</div>
