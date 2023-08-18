@@ -439,7 +439,7 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 		}
 		try {
 			// Send the search prompt to the ChatGPTAPI instance and store the response
-			var response: ChatMessage = await agent.sendMessage("Generate the next question by inference, format: {\"problem\": \"what\"}", {
+			var response: ChatMessage = await agent.sendMessage("Generate the next question by inference, format: {\"problem\": \"what|how\"}", {
 				parentMessageId: this._lastResponseId,
 				timeoutMs: this.timeoutLength * 1000,
 				onProgress: (partialResponse) => {
