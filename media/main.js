@@ -63,6 +63,12 @@
         document.getElementById("qa-list").innerHTML = '';
         break;
       }
+      case "showNextProblem": {
+        showNextProblem();
+        var nextProblem = document.getElementById("next-problem-text");
+        nextProblem.innerHTML = message.value;
+        break;
+      }
     }
   });
 
@@ -83,6 +89,7 @@
   }
 
   function addQuestion() {
+    hiddenNextProblem();
     const list = document.getElementById("qa-list");
     list.classList.remove("hidden");
 
@@ -127,6 +134,14 @@
       });
     }
     showInProgress();
+  }
+
+  function showNextProblem() {
+    document.getElementById('next-problem').style.display = 'block';
+  }
+
+  function hiddenNextProblem() {
+    document.getElementById('next-problem').style.display = 'none';
   }
 
   function showInProgress() {
@@ -313,6 +328,14 @@
       behavior: "smooth",
       block: "end",
       inline: "nearest",
+    });
+  });
+
+  const nextProblem = document.getElementById('next-problem-text');
+  nextProblem.addEventListener('click', (e) => {
+    vscode.postMessage({
+      type: 'prompt',
+      value: nextProblem.textContent
     });
   });
 

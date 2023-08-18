@@ -424,11 +424,34 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 					autoScroll: true, 
 					responseInMarkdown: true 
 				});
+				this._getNextProblem(this._chatGPTAPI);
 			} else {
 				this._responseIdSet.delete(responseId);
 			}
 
 			this._view.webview.postMessage({ type: 'hideStopButton', value: "", code: "", autoScroll: true });
+		}
+	}
+
+	private async _getNextProblem(agent?: ChatGPTAPI) {
+		if (!agent) {
+			return;
+		}
+		try {
+			// Send the search prompt to the ChatGPTAPI instance and store the response
+			var response: ChatMessage = await agent.sendMessage("Generate the next question by inference, format: {\"problem\": \"what\"}", {
+				parentMessageId: this._lastResponseId,
+				timeoutMs: this.timeoutLength * 1000,
+				onProgress: (partialResponse) => {
+					this._lastResponseId = partialResponse.id;
+				},
+			});
+			if (this._view) {
+				const responseText = JSON.parse(response.text);
+				this._view.webview.postMessage({ type: 'showNextProblem', value: responseText["problem"] });
+			}
+		} catch (e) {
+			console.error(e);
 		}
 	}
 
@@ -469,6 +492,9 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 
 					<div class="flex-1 overflow-y-auto hidden" id="conversation-list" data-license="isc-gnc"></div>
 
+					<div id="next-problem" class="pl-4 pt-2 flex items-center hidden" data-license="isc-gnc">
+						<div id="next-problem-text" class="next-problem"></div>
+					</div>
 
 					<div id="in-progress" class="pl-4 pt-2 flex items-center hidden" data-license="isc-gnc">
 						<div class="spinner">

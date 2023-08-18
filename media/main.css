@@ -276,7 +276,7 @@ textarea::placeholder {
 
 .code-actions-wrapper {
     opacity: 0.70;
-    font-size: 12px;
+    font-size:  var(--vscode-font-size);;
     margin-top: 1rem;
 }
 
@@ -287,6 +287,12 @@ textarea::placeholder {
 
 .typing {
     font-size: var(--vscode-font-size);
+}
+
+.next-problem {
+    font-size: var(--vscode-font-size);
+    color: blue;
+    cursor: pointer;
 }
 
 .input-background {
