@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import { ChatGPTAPI, ChatMessage } from 'chatgpt-vscode';
 import {v4 as uuidv4 } from 'uuid';
+import { getCommands, getPromptPrefix } from './commandInfo';
+import { formatString } from './utils/stringUtils';
 
 
 export function activate(context: vscode.ExtensionContext) {
@@ -32,8 +34,6 @@ export function activate(context: vscode.ExtensionContext) {
 		})
 	);
 
-
-
 	// Register the commands that can be called from the extension's package.json
 	const commandHandler = (command:string) => {
 		const config = vscode.workspace.getConfiguration('chatgpt');
@@ -46,7 +46,7 @@ export function activate(context: vscode.ExtensionContext) {
 		const config = vscode.workspace.getConfiguration('chatgpt');
 		const prompt = config.get(command) as string;
 		const language = config.get('promptPrefix.translateLanguage') as string;
-		const fullPrompt = provider.formatString(prompt, language);
+		const fullPrompt = formatString(prompt, language);
 		provider.search(fullPrompt);
 	};
 
@@ -212,13 +212,6 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 		this._newAPI();
 	}
 
-	public formatString(template: string, ...args: any[]): string {
-		return template.replace(/{(\d+)}/g, (match, index) => {
-		  const argIndex = parseInt(index);
-		  return args[argIndex] !== undefined ? args[argIndex].toString() : match;
-		});
-	  }
-
 	public setConversationId(conversationId?: string, parentMessageId?: string) {
 		// if (!conversationId || !parentMessageId) {
 		// 	this._conversation = this._chatGPTAPI?.getConversation();
@@ -294,7 +287,26 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 					}
 				case 'prompt':
 					{
-						this.search(data.value, data.value.startsWith('/'));
+						if (data.value.startsWith('/')) {
+							let command = data.value.substring(1).toLowerCase();
+							let promptPrefix = getPromptPrefix(command);
+							console.log("promptPrefix: " +command);
+							const config = vscode.workspace.getConfiguration('chatgpt');
+		     	           const prompt = config.get( promptPrefix) as string;
+						   if (!prompt) {
+							    this.search(data.value);
+								return;
+						   }
+							if (command === 'translate') {
+		     	            	const language = config.get('promptPrefix.translateLanguage') as string;
+		                  		const fullPrompt = formatString(prompt, language);
+						  		this.search(fullPrompt);
+							} else {
+		     		            this.search(prompt);
+							}
+					 	} else {
+						 	   this.search(data.value);
+					   	}
 					}
 				case 'stop':
 					{
@@ -303,8 +315,8 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 					}
 			}
 		});
+		this._view.webview.postMessage({ type: 'setCommands', value: getCommands() });
 	}
-
 
 	public async clearChatHistory() {
 		if (this._view) {
@@ -312,7 +324,14 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 		}
 	}
 
-	public async search(prompt?:string, isUseSelectedCode:boolean = true) {
+	public getSelectedText() {
+		// Get the selected text of the active editor
+		const selection = vscode.window.activeTextEditor?.selection;
+		const selectedText = vscode.window.activeTextEditor?.document.getText(selection);
+		return selectedText;
+	}
+
+	public async search(prompt?:string) {
 		this._prompt = prompt;
 		if (!prompt) {
 			prompt = '';
@@ -334,20 +353,17 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 		var responseId: string = ""; 
 		var responseText;
 
-		// Get the selected text of the active editor
-		const selection = vscode.window.activeTextEditor?.selection;
-		const selectedText = vscode.window.activeTextEditor?.document.getText(selection);
 		let searchPrompt = '';
 
-		if (isUseSelectedCode && selection && selectedText) {
+		if (this.getSelectedText()) {
 			if (prompt.startsWith('/')) {
 				prompt = prompt.substring(1);
 			}
 			// If there is a selection, add the prompt and the selected text to the search prompt
 			if (this.selectedInsideCodeblock) {
-				searchPrompt = `${prompt}\n\`\`\`\n${selectedText}\n\`\`\``;
+				searchPrompt = `${prompt}\n\`\`\`\n${this.getSelectedText()}\n\`\`\``;
 			} else {
-				searchPrompt = `${prompt}\n${selectedText}\n`;
+				searchPrompt = `${prompt}\n${this.getSelectedText()}\n`;
 			}
 		} else {
 			// Otherwise, just use the prompt if user typed it
@@ -360,7 +376,19 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 		console.log(this._view);
 		if (this._view) {
 			console.log(searchPrompt);
-			this._view.webview.postMessage({ type: 'addQuestion', value: searchPrompt, code: selectedText, autoScroll: true });
+			this._view.webview.postMessage({ type: 'addQuestion', value: searchPrompt, code: this.getSelectedText(), autoScroll: true });
+			if (prompt.startsWith('/') && !this.getSelectedText()) {
+				this._view.show?.(true);
+			    this._view.webview.postMessage({ 
+				    type: 'setResponse',  
+				    value: "Please select the code to excute.", 
+				    done: true,
+				    id: uuidv4(), 
+				    autoScroll: true, 
+				    responseInMarkdown: true 
+			    });
+				return;
+			}
 		}
 
 		if (!this._chatGPTAPI) {
@@ -503,6 +531,9 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 							<div class="bounce3"></div>
 						</div>	
 					</div>
+
+					<div id="popupMenu" class="popup-menu">
+                    </div>
 
 				    <div class="p-2 flex items-center pt-2" data-license="isc-gnc">
 						<div class="flex-1 textarea-wrapper">

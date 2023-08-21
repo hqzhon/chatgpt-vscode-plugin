@@ -7,6 +7,7 @@
 
   let response = '';
   let response1;
+  let _commandInfo = [];
 
   marked.setOptions({
     renderer: new marked.Renderer(),
@@ -67,6 +68,10 @@
         showNextProblem();
         var nextProblem = document.getElementById("next-problem-text");
         nextProblem.innerHTML = message.value;
+        break;
+      }
+      case "setCommands": {
+        _commandInfo = message.value;
         break;
       }
     }
@@ -293,6 +298,7 @@
   }
 
   const promptInput = document.getElementById('prompt-input');
+  const popupMenu = document.getElementById('popupMenu');
 
   // Listen for keyup events on the prompt input element
   promptInput.addEventListener('keydown', (e) => {
@@ -305,8 +311,50 @@
         value: promptInput.value
       });
       promptInput.value = '';
+      popupMenu.innerHTML = "";
     }
   });
+
+  promptInput.addEventListener('input', (e) => {
+    popupMenu.innerHTML = "";
+    if (promptInput.value.startsWith('/')) {
+      let textarea = e.target;
+      console.log(textarea.getBoundingClientRect());
+      let rect = textarea.getBoundingClientRect();
+      popupMenu.style.display = 'block';
+      popupMenu.style.left = rect.left + 'px';
+      popupMenu.style.bottom = rect.height + 5 + 'px';
+
+      console.log('_commandInfo: ' + _commandInfo);
+      for (let i = _commandInfo.length - 1; i >= 0; i--) {
+        let command = _commandInfo[i];
+        console.log('command: ' + command);
+        if (command.toString().toLowerCase().startsWith(promptInput.value.substring(1).toLowerCase())) {
+          let newOption = document.createElement('a');
+          newOption.href = "#";
+          newOption.textContent = command;
+          newOption.addEventListener('click', function(event) {
+          event.preventDefault();
+          popupMenu.style.display = 'none';
+          // vscode.postMessage({
+          //   type: 'excuteCommand',
+          //   value: this.textContent
+          // });
+          promptInput.value += this.textContent + ' ';
+        });
+        popupMenu.appendChild(newOption);
+      }
+    }      
+    }
+  });
+
+
+  document.addEventListener('click', function(e) {
+    let popupMenu = document.getElementById('popupMenu');
+    if (e.target.closest('.popup-menu') !== popupMenu) {
+        popupMenu.style.display = 'none';
+    }
+});
 
   document.getElementById('ask-button').addEventListener('click', (e) => {
     vscode.postMessage({

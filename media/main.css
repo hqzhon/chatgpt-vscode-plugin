@@ -291,7 +291,7 @@ textarea::placeholder {
 
 .next-problem {
     font-size: var(--vscode-font-size);
-    color: blue;
+    color: CornflowerBlue;
     cursor: pointer;
 }
 
@@ -388,4 +388,24 @@ textarea::placeholder {
 .answer-element-ext a {
     text-decoration-line: underline;
     text-underline-offset: 2px;
+}
+
+.popup-menu {
+    display: none;
+    position: absolute;
+    background-color: var(--vscode-input-background);
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    border: 1px solid var(--vscode-input-border);
+}
+
+.popup-menu a {
+    color:  var(--vscode-input-foreground);
+    padding: 6px 5px;
+    text-decoration: none;
+    display: block;
+}
+
+.popup-menu a:hover {
+    background-color: var(--vscode-editor-background);
 }
