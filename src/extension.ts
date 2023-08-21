@@ -303,7 +303,7 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 								return;
 						   }
 						   console.log("after prompt: " + prompt);
-							if (command === 'translate') {
+							if (command.trim().toLowerCase() === 'translate') {
 		     	            	const language = config.get('promptPrefix.translateLanguage') as string;
 		                  		const fullPrompt = formatString(prompt, language);
 						  		this.search(fullPrompt, true);
