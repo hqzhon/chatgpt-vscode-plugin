@@ -150,7 +150,11 @@ export function activate(context: vscode.ExtensionContext) {
 			const maxTokens = config.get('maxTokens') as number | undefined;
 			provider.setMaxTokens(maxTokens);
 		}
-});
+	});
+	vscode.workspace.onDidOpenTextDocument((event: vscode.TextDocument) => {
+		console.log("onDidOpenTextDocument");
+		provider.setCommands();
+	});
 
 }
 
@@ -317,7 +321,13 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 					}
 			}
 		});
-		this._view.webview.postMessage({ type: 'setCommands', value: getCommands() });
+		this.setCommands();
+	}
+
+	public async setCommands() {
+		if (this._view) {
+			this._view.webview.postMessage({ type: 'setCommands', value: getCommands() });
+		}
 	}
 
 	public async clearChatHistory() {
