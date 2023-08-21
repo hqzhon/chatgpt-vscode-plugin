@@ -22,7 +22,7 @@ This Visual Studio Code extension allows you to use the [ChatGPT API](https://gi
 
 To use this extension, install it from the VSCode marketplace or download and install `.vsix` file from Releases.
 
-1. After the installation is complete, you will need to add your ChatGPT session token to the extension settings in VSCode. To do this, open the `Settings` panel by going to the `Code` menu and selecting `Preferences`, then `Settings`.
+1. After the installation is complete, you will need to add your ChatGPT apiKey to the extension settings in VSCode. To do this, open the `Settings` panel by going to the `Code` menu and selecting `Preferences`, then `Settings`.
 2. In the search bar, type `ChatGPT` to filter the settings list.
 3. In the ChatGPT section, enter your apiKey in the `apiKey` field.
 
