@@ -299,24 +299,71 @@
 
   const promptInput = document.getElementById('prompt-input');
   const popupMenu = document.getElementById('popupMenu');
+  const popupMenuContent = document.getElementById('popupMenuContent');
 
   // Listen for keyup events on the prompt input element
   promptInput.addEventListener('keydown', (e) => {
     const { keyCode, ctrlKey, shiftKey } = e;
+
+    if (popupMenuContent.children.length > 0) {
+      let selected = popupMenuContent.querySelector('.selected');
+      if (keyCode === 13 && selected) {
+        e.preventDefault();
+        popupMenu.style.display = 'none';
+        promptInput.value += selected.textContent + ' ';
+        popupMenuContent.innerHTML = "";
+        return;
+      }
+    }
   
     if (keyCode === 13 && !ctrlKey && !shiftKey) {
+      if (promptInput.value.length === 0) {
+        return;
+      }
       e.preventDefault();
       vscode.postMessage({
         type: 'prompt',
         value: promptInput.value
       });
       promptInput.value = '';
-      popupMenu.innerHTML = "";
+      popupMenuContent.innerHTML = "";
+    }
+
+    console.log('keyCode: ' + keyCode);
+    if (popupMenuContent.children.length > 0) {
+      let selected = popupMenuContent.querySelector('.selected');
+      if (keyCode === 38) {
+        if (selected) {
+          let prev = selected.previousElementSibling;
+          if (prev) {
+            selected.classList.remove('selected');
+            prev.classList.add('selected');
+          }
+        } else {
+          let last = popupMenuContent.lastElementChild;
+          if (last) {
+            last.classList.add('selected');
+          }
+        }
+      } else if (keyCode === 40) {
+        if (selected) {
+          let next = selected.nextElementSibling;
+          if (next) {
+            selected.classList.remove('selected');
+            next.classList.add('selected');
+          }
+        } else {
+          let first = popupMenuContent.firstElementChild;
+          if (first) {
+            first.classList.add('selected');
+          }
+        }
+      }
     }
   });
 
   promptInput.addEventListener('input', (e) => {
-    popupMenu.innerHTML = "";
+    popupMenuContent.innerHTML = "";
     if (promptInput.value.startsWith('/')) {
       let textarea = e.target;
       console.log(textarea.getBoundingClientRect());
@@ -330,8 +377,10 @@
         let command = _commandInfo[i];
         console.log('command: ' + command);
         if (command.toString().toLowerCase().startsWith(promptInput.value.substring(1).toLowerCase())) {
-          let newOption = document.createElement('a');
-          newOption.href = "#";
+          let newOption = document.createElement('li');
+          if (i === _commandInfo.length - 1) {
+            newOption.classList.add('selected');
+          }
           newOption.textContent = command;
           newOption.addEventListener('click', function(event) {
           event.preventDefault();
@@ -342,7 +391,8 @@
           // });
           promptInput.value += this.textContent + ' ';
         });
-        popupMenu.appendChild(newOption);
+        popupMenuContent.appendChild(newOption);
+        promptInput.focus();
       }
     }      
     }
@@ -357,11 +407,15 @@
 });
 
   document.getElementById('ask-button').addEventListener('click', (e) => {
+    if (promptInput.value.length === 0) {
+      return;
+    }
     vscode.postMessage({
       type: 'prompt',
-      value: this.value
+      value: promptInput.value
     });
     promptInput.value = '';
+    popupMenuContent.innerHTML = "";
   });
 
   document.getElementById('stop-button').addEventListener('click', (e) => {

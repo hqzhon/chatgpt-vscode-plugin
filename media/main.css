@@ -399,13 +399,20 @@ textarea::placeholder {
     border: 1px solid var(--vscode-input-border);
 }
 
-.popup-menu a {
+.popup-menu ul {
     color:  var(--vscode-input-foreground);
-    padding: 6px 5px;
     text-decoration: none;
+    margin: 0;
+    padding: 0;
     display: block;
 }
 
-.popup-menu a:hover {
+.popup-menu li {
+    padding: 4px 5px;
+    cursor: pointer;
+    display: block;
+}
+
+.popup-menu li.selected {
     background-color: var(--vscode-editor-background);
 }

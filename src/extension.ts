@@ -289,20 +289,22 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 					{
 						if (data.value.startsWith('/')) {
 							let command = data.value.substring(1).toLowerCase();
-							let promptPrefix = getPromptPrefix(command);
-							console.log("promptPrefix: " +command);
+							let promptPrefix: string = getPromptPrefix(command);
+							console.log("promptPrefix: " +promptPrefix);
 							const config = vscode.workspace.getConfiguration('chatgpt');
 		     	           const prompt = config.get( promptPrefix) as string;
+						   console.log("prompt: " + prompt);
 						   if (!prompt) {
-							    this.search(data.value);
+							    this.search(data.value.substring(1) , true);
 								return;
 						   }
+						   console.log("after prompt: " + prompt);
 							if (command === 'translate') {
 		     	            	const language = config.get('promptPrefix.translateLanguage') as string;
 		                  		const fullPrompt = formatString(prompt, language);
-						  		this.search(fullPrompt);
+						  		this.search(fullPrompt, true);
 							} else {
-		     		            this.search(prompt);
+		     		            this.search(prompt, true);
 							}
 					 	} else {
 						 	   this.search(data.value);
@@ -324,14 +326,14 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 		}
 	}
 
-	public getSelectedText() {
+	public getSelectedText(): string {
 		// Get the selected text of the active editor
 		const selection = vscode.window.activeTextEditor?.selection;
 		const selectedText = vscode.window.activeTextEditor?.document.getText(selection);
-		return selectedText;
+		return selectedText || ''; 
 	}
 
-	public async search(prompt?:string) {
+	public async search(prompt?:string, isNeedSelectCode: boolean = false) {
 		this._prompt = prompt;
 		if (!prompt) {
 			prompt = '';
@@ -355,10 +357,9 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 
 		let searchPrompt = '';
 
-		if (this.getSelectedText()) {
-			if (prompt.startsWith('/')) {
-				prompt = prompt.substring(1);
-			}
+		console.log("this.getSelectedText(): " + this.getSelectedText().length);
+
+		if (this.getSelectedText().length > 0) {
 			// If there is a selection, add the prompt and the selected text to the search prompt
 			if (this.selectedInsideCodeblock) {
 				searchPrompt = `${prompt}\n\`\`\`\n${this.getSelectedText()}\n\`\`\``;
@@ -366,20 +367,10 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 				searchPrompt = `${prompt}\n${this.getSelectedText()}\n`;
 			}
 		} else {
-			// Otherwise, just use the prompt if user typed it
-			searchPrompt = prompt;
-		}
-
-		this._fullPrompt = searchPrompt;
-
-		console.log("sendMessage");
-		console.log(this._view);
-		if (this._view) {
-			console.log(searchPrompt);
-			this._view.webview.postMessage({ type: 'addQuestion', value: searchPrompt, code: this.getSelectedText(), autoScroll: true });
-			if (prompt.startsWith('/') && !this.getSelectedText()) {
-				this._view.show?.(true);
-			    this._view.webview.postMessage({ 
+			if (isNeedSelectCode) {
+				if (this._view) {
+					this._view.show?.(true);
+			        this._view.webview.postMessage({ 
 				    type: 'setResponse',  
 				    value: "Please select the code to excute.", 
 				    done: true,
@@ -388,7 +379,19 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 				    responseInMarkdown: true 
 			    });
 				return;
+				}
 			}
+			// Otherwise, just use the prompt if user typed it
+			searchPrompt = prompt;
+		}
+
+		this._fullPrompt = searchPrompt;
+
+		console.log("sendMessage, prompt: " + prompt);
+		console.log(this._view);
+		if (this._view) {
+			console.log(searchPrompt);
+			this._view.webview.postMessage({ type: 'addQuestion', value: searchPrompt, code: this.getSelectedText(), autoScroll: true });
 		}
 
 		if (!this._chatGPTAPI) {
@@ -533,6 +536,7 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 					</div>
 
 					<div id="popupMenu" class="popup-menu">
+						<ul id="popupMenuContent">
                     </div>
 
 				    <div class="p-2 flex items-center pt-2" data-license="isc-gnc">

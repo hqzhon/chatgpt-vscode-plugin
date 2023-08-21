@@ -50,12 +50,14 @@ export function getCommandNames(inputStr: String) {
     return result;
 }
 
-export function getPromptPrefix(commandName: String) {
+export function getPromptPrefix(commandName: string): string {
     for (let i = 0; i < commandInfoJson.length; i++) {
         const commandInfo = JSON.parse(JSON.stringify(commandInfoJson[i]));
-        const name = commandInfo.name;
-        if (name === commandName) {
-            return commandInfo.promptPrefix;
+        const name: string = commandInfo.name;
+        const promptPrefix: string = commandInfo.promptPrefix;
+        if (name.trim().toLowerCase() === commandName.trim().toLowerCase()) {
+            console.log("promptPrefix: " + promptPrefix);
+            return promptPrefix;
         }
     }
     return "";
