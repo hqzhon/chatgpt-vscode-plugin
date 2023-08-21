@@ -1,4 +1,4 @@
-# ChatGPT Extension for VSCode [中文版](https://github.com/hqzhon/chatgpt-vscode-plugin/blob/main/README-zh.md)
+# ChatGPT Extension for VSCode     ([中文版说明](https://github.com/hqzhon/chatgpt-vscode-plugin/blob/main/README-zh.md))
 This Visual Studio Code extension allows you to use the [ChatGPT API](https://github.com/hqzhon/chatgpt-api) to generate natural language responses from OpenAI's [ChatGPT](https://chat.openai.com/chat) to your questions, right within the editor.
 
 ## Sponsors
