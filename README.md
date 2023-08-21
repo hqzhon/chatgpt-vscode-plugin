@@ -1,4 +1,4 @@
-# ChatGPT Extension for VSCode
+# ChatGPT Extension for VSCode [中文版](https://github.com/hqzhon/chatgpt-vscode-plugin/blob/main/README-zh.md)
 This Visual Studio Code extension allows you to use the [ChatGPT API](https://github.com/hqzhon/chatgpt-api) to generate natural language responses from OpenAI's [ChatGPT](https://chat.openai.com/chat) to your questions, right within the editor.
 
 ## Sponsors
@@ -21,8 +21,11 @@ This Visual Studio Code extension allows you to use the [ChatGPT API](https://gi
 ## Installation
 
 To use this extension, install it from the VSCode marketplace or download and install `.vsix` file from Releases.
+After the installation is complete, you need to add the ChatGPT apiKey to VSCode's extension settings. This can be done as follows: 
+<img src="examples/setting.gif" alt="Setting"/>
 
-1. After the installation is complete, you will need to add your ChatGPT apiKey to the extension settings in VSCode. To do this, open the `Settings` panel by going to the `Code` menu and selecting `Preferences`, then `Settings`.
+Or set it up by following these steps:
+1. open the `Settings` panel by going to the `Code` menu and selecting `Preferences`, then `Settings`.
 2. In the search bar, type `ChatGPT` to filter the settings list.
 3. In the ChatGPT section, enter your apiKey in the `apiKey` field.
 
