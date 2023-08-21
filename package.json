@@ -2,7 +2,7 @@
   "name": "quick-chatgpt",
   "displayName": "Quick ChatGPT: Using ChatGPT to improve code quality",
   "description": "Extension that allows you to use OpeanAI's ChatGPT inside the vscode",
-  "version": "0.6.8",
+  "version": "0.6.9",
   "publisher": "hqzhon",
   "icon": "resources/extensionIcon.png",
   "license": "MIT",
