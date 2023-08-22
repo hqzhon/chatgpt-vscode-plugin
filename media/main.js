@@ -93,6 +93,14 @@
 
   }
 
+  document.getElementById("qa-list").addEventListener("click", (e) => {
+    if (e.target.id === "showCode") {
+      const codeInfo = e.target.parentElement.querySelector("#codeInfo");
+      codeInfo.classList.remove("hidden");
+      e.target.classList.add("hidden");
+    }
+  });
+
   function addQuestion() {
     hiddenNextProblem();
     const list = document.getElementById("qa-list");
@@ -120,13 +128,6 @@
                         <div class="overflow-y-auto hidden" id="codeInfo">${markedResponse}</div>
                         <div class="overflow-y-auto user-background p-2 pb-2 block whitespace-pre clickable" id="showCode">show code</div>
                     </div>`;
-    const showCodeBtn = list.querySelector("#showCode");
-    const codeInfo = list.querySelector("#codeInfo");
-    list.querySelector("#showCode").addEventListener("click", (e) => {
-      console.log("showCodeBtn");
-      codeInfo.style.display = "block";
-      showCodeBtn.style.display = "none";
-    });
     
     const preCodeList = list.lastChild.querySelectorAll("pre > code");
     preCodeList.forEach((preCode) => {
