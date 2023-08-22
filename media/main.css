@@ -289,7 +289,7 @@ textarea::placeholder {
     font-size: var(--vscode-font-size);
 }
 
-.next-problem {
+.clickable {
     font-size: var(--vscode-font-size);
     color: CornflowerBlue;
     cursor: pointer;

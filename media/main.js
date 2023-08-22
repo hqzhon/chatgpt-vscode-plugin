@@ -109,15 +109,25 @@
 
     updatedValue =
       response1.value.split("```").length % 2 === 1
-          ? response1.value
-          : response1.value + "\n\n```\n\n";
+          ? response1.code
+          : response1.code + "\n\n```\n\n";
         
     const markedResponse = marked.parse(updatedValue);
 
     list.innerHTML += `<div class="p-2 input-background">
                         <h2 class="mb-5 flex" data-license="isc-gnc">${userSvg}You</h2>
-                        <div class="overflow-y-auto">${markedResponse}</div>
+                        <div class="overflow-y-auto">${response1.value}</div>
+                        <div class="overflow-y-auto hidden" id="codeInfo">${markedResponse}</div>
+                        <div class="overflow-y-auto user-background p-2 pb-2 block whitespace-pre clickable" id="showCode">show code</div>
                     </div>`;
+    const showCodeBtn = list.querySelector("#showCode");
+    const codeInfo = list.querySelector("#codeInfo");
+    list.querySelector("#showCode").addEventListener("click", (e) => {
+      console.log("showCodeBtn");
+      codeInfo.style.display = "block";
+      showCodeBtn.style.display = "none";
+    });
+    
     const preCodeList = list.lastChild.querySelectorAll("pre > code");
     preCodeList.forEach((preCode) => {
       preCode.classList.add(
@@ -139,6 +149,10 @@
       });
     }
     showInProgress();
+  }
+
+  function getFormatSelectedCode (code) {
+
   }
 
   function showNextProblem() {

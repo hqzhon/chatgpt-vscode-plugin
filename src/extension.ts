@@ -401,7 +401,8 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 		console.log(this._view);
 		if (this._view) {
 			console.log(searchPrompt);
-			this._view.webview.postMessage({ type: 'addQuestion', value: searchPrompt, code: this.getSelectedText(), autoScroll: true });
+			let code = `\n\`\`\`\n${this.getSelectedText()}\n\`\`\``;
+			this._view.webview.postMessage({ type: 'addQuestion', value: prompt, code: code, autoScroll: true });
 		}
 
 		if (!this._chatGPTAPI) {
@@ -534,7 +535,7 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 					<div class="flex-1 overflow-y-auto hidden" id="conversation-list" data-license="isc-gnc"></div>
 
 					<div id="next-problem" class="pl-4 pt-2 flex items-center hidden" data-license="isc-gnc">
-						<div id="next-problem-text" class="next-problem"></div>
+						<div id="next-problem-text" class="next-problem clickable"></div>
 					</div>
 
 					<div id="in-progress" class="pl-4 pt-2 flex items-center hidden" data-license="isc-gnc">
