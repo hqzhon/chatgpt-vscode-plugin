@@ -270,6 +270,10 @@ textarea::placeholder {
     grid-area: 1 / 1 / 2 / 2;
 }
 
+.textarea-container {
+    position: relative;
+  }
+
 .pre-code-element:not(:last-child) {
     margin-bottom: 2rem;
 }
@@ -416,3 +420,13 @@ textarea::placeholder {
 .popup-menu li.selected {
     background-color: var(--vscode-editor-background);
 }
+
+.gray-tip {
+    position: absolute;
+    color: gray;
+    pointer-events: none;
+    left: 0;
+    top: 0;
+    padding: .5rem 5rem .5rem .5rem;
+    transition: top 0.2s, left 0.2s;
+  }

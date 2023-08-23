@@ -315,20 +315,50 @@
   const promptInput = document.getElementById('prompt-input');
   const popupMenu = document.getElementById('popupMenu');
   const popupMenuContent = document.getElementById('popupMenuContent');
+  const grayTip = document.getElementById("grayTip");
 
   // Listen for keyup events on the prompt input element
   promptInput.addEventListener('keydown', (e) => {
     const { keyCode, ctrlKey, shiftKey } = e;
+    console.log('keyCode: ' + keyCode);
 
     if (popupMenuContent.children.length > 0) {
       let selected = popupMenuContent.querySelector('.selected');
       if (keyCode === 13 && selected) {
         e.preventDefault();
         popupMenu.style.display = 'none';
-        promptInput.value += selected.textContent + ' ';
+        promptInput.value = "/" + selected.textContent + ' ';
         popupMenuContent.innerHTML = "";
+        for (let i = _commandInfo.length - 1; i >= 0; i--) {
+          let command = _commandInfo[i];
+          if (command.name.toString().toLowerCase().startsWith(selected.textContent.trim().toLowerCase())) {
+            grayTip.textContent = command.description;
+            let rect = e.target.getBoundingClientRect();
+            grayTip.style.left = rect.left + e.target.value.length * 7 + 'px';
+            break;
+          }
+        }
         return;
       }
+    }
+
+    if (keyCode === 8) {
+      popupMenuContent.innerHTML = "";
+      let isAddSelected = false;
+      for (let i = _commandInfo.length - 1; i >= 0; i--) {
+        let command = _commandInfo[i];
+        console.log('command: ' + command.name);
+        if (command.name.toString().toLowerCase().startsWith(promptInput.value.substring(1).toLowerCase())) {
+          let newOption = document.createElement('li');
+          if (!isAddSelected) {
+            newOption.classList.add('selected');
+            isAddSelected = true;
+          }
+          newOption.textContent = command.name;
+          popupMenuContent.appendChild(newOption);
+          promptInput.focus();
+        }
+      }  
     }
   
     if (keyCode === 13 && !ctrlKey && !shiftKey) {
@@ -342,9 +372,9 @@
       });
       promptInput.value = '';
       popupMenuContent.innerHTML = "";
+      grayTip.textContent = "";
     }
 
-    console.log('keyCode: ' + keyCode);
     if (popupMenuContent.children.length > 0) {
       let selected = popupMenuContent.querySelector('.selected');
       if (keyCode === 38) {
@@ -379,37 +409,31 @@
 
   promptInput.addEventListener('input', (e) => {
     popupMenuContent.innerHTML = "";
+    grayTip.textContent = "";
     if (promptInput.value.startsWith('/')) {
       let textarea = e.target;
-      console.log(textarea.getBoundingClientRect());
       let rect = textarea.getBoundingClientRect();
       popupMenu.style.display = 'block';
       popupMenu.style.left = rect.left + 'px';
       popupMenu.style.bottom = rect.height + 5 + 'px';
+      grayTip.style.left = rect.left + e.target.value.length * 7 + 'px';
 
       console.log('_commandInfo: ' + _commandInfo);
+      let isAddSelected = false;
       for (let i = _commandInfo.length - 1; i >= 0; i--) {
         let command = _commandInfo[i];
-        console.log('command: ' + command);
-        if (command.toString().toLowerCase().startsWith(promptInput.value.substring(1).toLowerCase())) {
+        console.log('command: ' + command.name);
+        if (command.name.toString().toLowerCase().startsWith(promptInput.value.substring(1).toLowerCase())) {
           let newOption = document.createElement('li');
-          if (i === _commandInfo.length - 1) {
+          if (!isAddSelected) {
             newOption.classList.add('selected');
+            isAddSelected = true;
           }
-          newOption.textContent = command;
-          newOption.addEventListener('click', function(event) {
-          event.preventDefault();
-          popupMenu.style.display = 'none';
-          // vscode.postMessage({
-          //   type: 'excuteCommand',
-          //   value: this.textContent
-          // });
-          promptInput.value += this.textContent + ' ';
-        });
-        popupMenuContent.appendChild(newOption);
-        promptInput.focus();
-      }
-    }      
+          newOption.textContent = command.name;
+          popupMenuContent.appendChild(newOption);
+          promptInput.focus();
+        }
+      }      
     }
   });
 
@@ -431,6 +455,7 @@
     });
     promptInput.value = '';
     popupMenuContent.innerHTML = "";
+    grayTip.textContent = "";
   });
 
   document.getElementById('stop-button').addEventListener('click', (e) => {

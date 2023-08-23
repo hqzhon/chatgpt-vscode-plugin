@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { ChatGPTAPI, ChatMessage } from 'chatgpt-vscode';
 import {v4 as uuidv4 } from 'uuid';
-import { getCommands, getPromptPrefix } from './commandInfo';
+import { getCommands, getCommand } from './commandInfo';
 import { formatString } from './utils/stringUtils';
 
 
@@ -36,18 +36,16 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Register the commands that can be called from the extension's package.json
 	const commandHandler = (command:string) => {
-		const config = vscode.workspace.getConfiguration('chatgpt');
-		const prompt = config.get(command) as string;
-		provider.search(prompt);
-	};
-
-	// Register the commands that can be called from the extension's package.json
-	const commandTranslateHandle = (command:string) => {
-		const config = vscode.workspace.getConfiguration('chatgpt');
-		const prompt = config.get(command) as string;
-		const language = config.get('promptPrefix.translateLanguage') as string;
-		const fullPrompt = formatString(prompt, language);
-		provider.search(fullPrompt);
+		let prompt = getCommand(command).prompt;
+		let description = getCommand(command).description;
+		if (command.trim().toLowerCase() === 'translate') {
+			const config = vscode.workspace.getConfiguration('chatgpt');
+			const language = config.get('promptPrefix.translateLanguage') as string;
+			const fullPrompt = formatString(prompt, language);
+			provider.search(fullPrompt, true, description);
+		} else {
+			provider.search(prompt, true, description);
+		}				
 	};
 
 	const commandAsk = vscode.commands.registerCommand('chatgpt.ask', () => {
@@ -81,22 +79,22 @@ export function activate(context: vscode.ExtensionContext) {
 		});
 	});
 	const commandExplain = vscode.commands.registerCommand('chatgpt.explain', () => {	
-		commandHandler('promptPrefix.explain');
+		commandHandler('explain');
 	});
 	const commandRefactor = vscode.commands.registerCommand('chatgpt.refactor', () => {
-		commandHandler('promptPrefix.refactor');
+		commandHandler('refactor');
 	});
 	const commandOptimize = vscode.commands.registerCommand('chatgpt.optimize', () => {
-		commandHandler('promptPrefix.optimize');
+		commandHandler('optimize');
 	});
 	const commandProblems = vscode.commands.registerCommand('chatgpt.findProblems', () => {
-		commandHandler('promptPrefix.findProblems');
+		commandHandler('findProblems');
 	});
 	const commandAddComments= vscode.commands.registerCommand('chatgpt.addComments', () => {
-		commandHandler('promptPrefix.addComments');
+		commandHandler('comments');
 	});
 	const commandTranslate = vscode.commands.registerCommand('chatgpt.translate', () => {
-		commandTranslateHandle('promptPrefix.translate');
+		commandHandler('translate');
 	});
 
 	let commandResetConversation = vscode.commands.registerCommand('chatgpt.resetConversation', () => {
@@ -293,22 +291,21 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 					{
 						if (data.value.startsWith('/')) {
 							let command = data.value.substring(1).toLowerCase();
-							let promptPrefix: string = getPromptPrefix(command);
-							console.log("promptPrefix: " +promptPrefix);
-							const config = vscode.workspace.getConfiguration('chatgpt');
-		     	           const prompt = config.get( promptPrefix) as string;
-						   console.log("prompt: " + prompt);
-						   if (!prompt) {
+							let commandInfo = getCommand(command);
+						    if (!commandInfo || !commandInfo.prompt) {
 							    this.search(data.value.substring(1) , true);
 								return;
-						   }
-						   console.log("after prompt: " + prompt);
+						    }
+							let prompt = commandInfo.prompt;
+							let description = commandInfo.description;
+						    console.log("after prompt: " + prompt);
 							if (command.trim().toLowerCase() === 'translate') {
+								const config = vscode.workspace.getConfiguration('chatgpt');
 		     	            	const language = config.get('promptPrefix.translateLanguage') as string;
 		                  		const fullPrompt = formatString(prompt, language);
-						  		this.search(fullPrompt, true);
+						  		this.search(fullPrompt, true, description);
 							} else {
-		     		            this.search(prompt, true);
+		     		            this.search(prompt, true, description);
 							}
 					 	} else {
 						 	   this.search(data.value);
@@ -343,7 +340,7 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 		return selectedText || ''; 
 	}
 
-	public async search(prompt?:string, isNeedSelectCode: boolean = false) {
+	public async search(prompt?:string, isNeedSelectCode: boolean = false, promptDescription: string = "") {
 		this._prompt = prompt;
 		if (!prompt) {
 			prompt = '';
@@ -402,7 +399,11 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 		if (this._view) {
 			console.log(searchPrompt);
 			let code = `\n\`\`\`\n${this.getSelectedText()}\n\`\`\``;
-			this._view.webview.postMessage({ type: 'addQuestion', value: prompt, code: code, autoScroll: true });
+			if (promptDescription.length === 0) {
+				promptDescription = prompt;
+			}
+
+			this._view.webview.postMessage({ type: 'addQuestion', value: promptDescription, code: code, autoScroll: true });
 		}
 
 		if (!this._chatGPTAPI) {
@@ -551,13 +552,14 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
                     </div>
 
 				    <div class="p-2 flex items-center pt-2" data-license="isc-gnc">
-						<div class="flex-1 textarea-wrapper">
+						<div class="flex-1 textarea-wrapper textarea-container">
 							<textarea
 								type="text"
 								rows="1" data-license="isc-gnc"
 								id="prompt-input"
-								placeholder="Ask a question..."
+								placeholder="Ask a question or type '/' for topics"
 								onInput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
+							<span class="gray-tip" id="grayTip"></span>
 						</div>
 						<div id="question-input-buttons" class="right-6 absolute p-0.5 ml-5 flex items-center gap-2">
 							<button id="ask-button" title="Submit prompt" class="ask-button rounded-lg p-0.5">
