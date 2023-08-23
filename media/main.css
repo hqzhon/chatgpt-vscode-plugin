@@ -430,3 +430,7 @@ textarea::placeholder {
     padding: .5rem 5rem .5rem .5rem;
     transition: top 0.2s, left 0.2s;
   }
+
+.defaultText a {
+    color: var(--vscode-textLink-foreground);
+}

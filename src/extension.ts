@@ -3,7 +3,7 @@ import { ChatGPTAPI, ChatMessage } from 'chatgpt-vscode';
 import {v4 as uuidv4 } from 'uuid';
 import { getCommands, getCommand } from './commandInfo';
 import { formatString } from './utils/stringUtils';
-
+import { userInfo } from 'os';
 
 export function activate(context: vscode.ExtensionContext) {
 	// Get the API session token from the extension's configuration
@@ -154,6 +154,7 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.workspace.onDidOpenTextDocument((event: vscode.TextDocument) => {
 		console.log("onDidOpenTextDocument");
 		provider.setCommands();
+		provider.setDefaultText();
 	});
 
 }
@@ -321,11 +322,26 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 			}
 		});
 		this.setCommands();
+		this.setDefaultText();
 	}
 
 	public async setCommands() {
 		if (this._view) {
 			this._view.webview.postMessage({ type: 'setCommands', value: getCommands() });
+		}
+	}
+
+	public async setDefaultText() {
+	    let username:string = userInfo().username;
+		if (this._view) {
+			this._view.webview.postMessage({ 
+				type: 'setDefaultText',  
+				value: username, 
+				done: true,
+				id: uuidv4(), 
+				autoScroll: true, 
+				responseInMarkdown: true 
+			});
 		}
 	}
 

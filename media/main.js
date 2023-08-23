@@ -5,7 +5,7 @@
 (function () {
   const vscode = acquireVsCodeApi();
 
-  let response = '';
+  let username = '';
   let response1;
   let _commandInfo = [];
 
@@ -44,10 +44,6 @@
         addQuestion();
         break;
       }
-      case "clearResponse": {
-        response = '';
-        break;
-      }
       case "setPrompt": {
         document.getElementById("prompt-input").value = message.value;
         break;
@@ -62,6 +58,7 @@
       }
       case "clearChatHistory": {
         document.getElementById("qa-list").innerHTML = '';
+        setDefaultText();
         break;
       }
       case "showNextProblem": {
@@ -74,24 +71,13 @@
         _commandInfo = message.value;
         break;
       }
+      case "setDefaultText": {
+        username = message.value;
+        setDefaultText();
+        break;
+      }
     }
   });
-
-  function fixCodeBlocks(response) {
-  // Use a regular expression to find all occurrences of the substring in the string
-  const REGEX_CODEBLOCK = new RegExp('\`\`\`', 'g');
-  const matches = response.match(REGEX_CODEBLOCK);
-
-  // Return the number of occurrences of the substring in the response, check if even
-  const count = matches ? matches.length : 0;
-  if (count % 2 === 0) {
-    return response;
-  } else {
-    // else append ``` to the end to make the last code block complete
-    return response.concat('\n\`\`\`');
-  }
-
-  }
 
   document.getElementById("qa-list").addEventListener("click", (e) => {
     if (e.target.id === "showCode") {
@@ -100,6 +86,17 @@
       e.target.classList.add("hidden");
     }
   });
+
+  function setDefaultText() {
+    console.log('setDefaultText');
+    const list = document.getElementById("qa-list");
+    list.classList.remove("hidden");
+    list.innerHTML += `<div class="p-2 input-background">
+                        <h2 class="mb-5 flex" data-license="isc-gnc">${aiSvg}ChatGPT</h2>
+                        <div class="overflow-y-auto defaultText">Hi ${username},  I'm your ChatGPT and I'm here to help you get things done faster. I can identify issues, explain and even improve code.
+                        <br><br>I'm powered by AI, so surprises and mistakes are possible. Make sure to verify any generated code or suggestions, and <a href="https://github.com/hqzhon/chatgpt-vscode-plugin/issues">share feedback</a> so that we can learn and improve.</div>
+                    </div>`;
+  }
 
   function addQuestion() {
     hiddenNextProblem();
