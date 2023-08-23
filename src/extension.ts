@@ -50,7 +50,9 @@ export function activate(context: vscode.ExtensionContext) {
 
 	const commandAsk = vscode.commands.registerCommand('chatgpt.ask', () => {
 		vscode.window.showInputBox({ prompt: 'What do you want to do?' }).then((value) => {
-			provider.search(value);
+			if (value) {
+				provider.search(value);
+			}
 		});
 	});
 	const commandClear = vscode.commands.registerCommand('chatgpt.clearHistory', () => {
@@ -398,7 +400,12 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 		console.log(this._view);
 		if (this._view) {
 			console.log(searchPrompt);
-			let code = `\n\`\`\`\n${this.getSelectedText()}\n\`\`\``;
+			let code;
+			if (this.getSelectedText().length > 0) {
+				code = `\n\`\`\`\n${this.getSelectedText()}\n\`\`\``;
+			} else {
+				code = '';
+			}
 			if (promptDescription.length === 0) {
 				promptDescription = prompt;
 			}

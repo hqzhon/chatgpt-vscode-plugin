@@ -128,6 +128,9 @@
                         <div class="overflow-y-auto hidden" id="codeInfo">${markedResponse}</div>
                         <div class="overflow-y-auto user-background p-2 pb-2 block whitespace-pre clickable" id="showCode">show code</div>
                     </div>`;
+    if (response1.code === null || response1.code.length === 0) {
+      list.lastChild.querySelector("#showCode").classList.add("hidden");
+    }
     
     const preCodeList = list.lastChild.querySelectorAll("pre > code");
     preCodeList.forEach((preCode) => {
